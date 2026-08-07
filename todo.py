@@ -14,8 +14,7 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 ENV_FILE = SCRIPT_DIR / ".env"
-DEFAULT_NOTE_ROOT = Path("C:/Antonio/Notes")
-DEFAULT_TODO_REL = "TODO/TODO/TODO.md"
+DEFAULT_TODO_REL = "TODO/TODO.md"
 
 TASK_RE = re.compile(r"^(\s*)- \[([ xX])\](.*)$")
 
@@ -36,12 +35,17 @@ ENV = load_env()
 
 
 def notes_root():
-    raw = os.environ.get("NOTES_ROOT") or ENV.get("NOTES_ROOT")
-    return Path(raw) if raw else DEFAULT_NOTE_ROOT
+    raw = ENV.get("NOTES_ROOT")
+    if not raw:
+        sys.exit(
+            "error: falta NOTES_ROOT (en .env). "
+            "Copia .env.example a .env y ajusta la ruta."
+        )
+    return Path(raw)
 
 
 def todo_path():
-    raw = os.environ.get("NOTES_TODO") or ENV.get("NOTES_TODO")
+    raw = ENV.get("NOTES_TODO")
     if raw:
         rel = Path(raw)
         return rel if rel.is_absolute() else notes_root() / rel

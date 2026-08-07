@@ -18,14 +18,22 @@ tanto desde el CLI, desde Obsidian o desde cualquier editor.
 ## Instalación
 
 Python 3.12+ (solo usa la librería estándar, sin dependencias). Clonar o copiar
-este proyecto y configurar la ruta en `.env`:
+este proyecto y copiar la config:
+
+```console
+copy .env.example .env
+```
+
+Luego configurar la ruta en `.env`:
 
 ```
 NOTES_ROOT=C:\Antonio\Notes
 ```
 
-Si no hay `.env`, usa `C:\Antonio\Notes` por defecto. También podés sobreescribir
-permanente con la variable de entorno `NOTES_ROOT`.
+`NOTES_ROOT` es obligatoria (el CLI falla con un error claro si no está).
+Opcionalmente `NOTES_TODO` (por defecto `TODO/TODO/TODO.md`, relativo al vault).
+También se pueden sobreescribir con variables de entorno del sistema.
+`.env` está en `.gitignore`; solo se versiona `.env.example`.
 
 ## Comandos
 
