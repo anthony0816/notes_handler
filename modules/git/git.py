@@ -1,7 +1,7 @@
 import sys
 import subprocess
 from datetime import datetime
-from todo import notes_root
+from modules.utils.todo import notes_root
 
 
 def cmd_sync(args):

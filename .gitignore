@@ -1,3 +1,5 @@
 .env
+config.json
 __pycache__/
 *.pyc
+z_folder/

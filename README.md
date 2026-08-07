@@ -52,6 +52,25 @@ Atajos: `add` = `create`, `ls` = `list`, `rm` = `delete`.
 Los ids aceptan también búsqueda por texto parcial. Releé con `todo list`
 después de cada operación porque los números de línea pueden cambiar.
 
+## Configuración
+
+Preferencias activables/desactivables en `config.json` (no se versiona):
+
+```console
+todo config list                        lista las configs y su valor
+todo config get active_prittier        consulta una config
+todo config set active_prittier true   activa el listado con colores
+```
+
+La config del listado hoy es:
+
+| Clave | Tipo | Descripción |
+| --- | --- | --- |
+| `active_prittier` | bool | Muestra `todo list` con colores (módulo `prittier`). Sin él, usa el listado plano. |
+
+El dispatch lo decide `todo_main.py`: si `active_prittier` está activo, el
+comando `list` delega en `modules/prittier/`; si no, en `todo.py`.
+
 ## Agregar `todo` al PATH (Windows)
 
 Para poder ejecutar `todo` desde cualquier terminal sin escribir la ruta

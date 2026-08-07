@@ -40,9 +40,13 @@ directorio del proyecto (donde esta `todo.py`).
 | `todo undo <id o texto>` | vuelve a abrir (`- [ ]`) |
 | `todo delete <id o texto>` | elimina la linea |
 | `todo sync ["mensaje"]` | `git add -A` + commit + push del repo completo |
+| `todo config list\|get\|set` | preferencias (ej. `active_prittier` para colores) |
 | `todo help` | ayuda |
 
 Atajos: `add` = `create`, `rm` = `delete`, `ls` = `list`.
+
+`todo list` delega en el módulo `prittier` (colores) si la config
+`active_prittier` está activa; si no, usa el listado plano.
 
 Los argumentos de `done`/`undo`/`delete` aceptan ids numericos o texto parcial
 a buscar. Se pueden pasar varios a la vez. Despues de cada operacion los ids

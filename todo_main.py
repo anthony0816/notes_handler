@@ -1,6 +1,10 @@
-from todo import  USAGE, cmd_create, cmd_list, cmd_edit, cmd_delete, cmd_toggle
 import sys
+
+from todo import USAGE, cmd_create, cmd_delete, cmd_edit, cmd_list, cmd_toggle
+from modules.config.config import cmd_config, get as config_get
 from modules.git.git import cmd_sync
+from modules.prittier.prittier import pretty_print_list
+
 
 def main(argv):
     if not argv or argv[0] in ("help", "-h", "--help"):
@@ -8,7 +12,10 @@ def main(argv):
         return
     cmd, args = argv[0].lower(), argv[1:]
     if cmd == "list" or cmd == "ls":
-        cmd_list(args)
+        if config_get("active_prittier"):
+            pretty_print_list(args)
+        else:
+            cmd_list(args)
     elif cmd == "create" or cmd == "add":
         cmd_create(args)
     elif cmd == "edit":
@@ -21,6 +28,8 @@ def main(argv):
         cmd_delete(args)
     elif cmd == "sync":
         cmd_sync(args)
+    elif cmd == "config":
+        cmd_config(args)
     else:
         sys.exit(f"comando desconocido: {cmd}\n\n{USAGE}")
 
