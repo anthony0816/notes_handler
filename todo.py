@@ -5,32 +5,13 @@ Tareas: lineas "- [ ] Titulo: descripcion" en TODO.md.
 - [ ] = pendiente, - [x] = hecha. El id de cada tarea es su numero de linea.
 """
 
-import datetime
-import os
 import re
-import subprocess
 import sys
 from pathlib import Path
+from modules.env.env import load_env
 
-SCRIPT_DIR = Path(__file__).resolve().parent
-ENV_FILE = SCRIPT_DIR / ".env"
 DEFAULT_TODO_REL = "TODO/TODO.md"
-
 TASK_RE = re.compile(r"^(\s*)- \[([ xX])\](.*)$")
-
-
-def load_env():
-    cfg = {}
-    if ENV_FILE.exists():
-        for line in ENV_FILE.read_text(encoding="utf-8").splitlines():
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            key, _, value = line.partition("=")
-            cfg[key.strip()] = value.strip().strip('"').strip("'")
-    return cfg
-
-
 ENV = load_env()
 
 
@@ -189,31 +170,7 @@ def cmd_delete(args):
         print(f"sin coincidencias: {', '.join(unknown)}", file=sys.stderr)
 
 
-def run_git(root, args):
-    return subprocess.run(
-        ["git", *args], cwd=root, capture_output=True, text=True, encoding="utf-8"
-    )
 
-
-def cmd_sync(args):
-    root = notes_root()
-    if not (root / ".git").exists():
-        sys.exit(f"error: no es repo git: {root}")
-    message = " ".join(args) or f"notas: {datetime.datetime.now():%Y-%m-%d %H:%M}"
-    add = run_git(root, ["add", "-A"])
-    if "error" in add.stderr.lower():
-        sys.exit(f"git add fallo: {add.stderr}")
-    commit = run_git(root, ["commit", "-m", message])
-    if commit.returncode != 0:
-        if "nothing to commit" in commit.stdout.lower():
-            print("nada que commitear")
-            return
-        sys.exit(f"git commit fallo: {commit.stderr or commit.stdout}")
-    print(commit.stdout.strip())
-    push = run_git(root, ["push"])
-    if push.returncode != 0:
-        sys.exit(f"git push fallo: {push.stderr or push.stdout}")
-    print(push.stdout.strip())
 
 
 USAGE = """todo - gestion de tareas TODO (Obsidian + git)
@@ -236,30 +193,3 @@ DETALLES:
   - Los ids aceptan tambien busqueda por texto parcial.
   - Config: .env junto al script (NOTES_ROOT) o variable de entorno.
 """
-
-
-def main(argv):
-    if not argv or argv[0] in ("help", "-h", "--help"):
-        print(USAGE)
-        return
-    cmd, args = argv[0].lower(), argv[1:]
-    if cmd == "list" or cmd == "ls":
-        cmd_list(args)
-    elif cmd == "create" or cmd == "add":
-        cmd_create(args)
-    elif cmd == "edit":
-        cmd_edit(args)
-    elif cmd == "done":
-        cmd_toggle(args, done=True)
-    elif cmd == "undo":
-        cmd_toggle(args, done=False)
-    elif cmd == "delete" or cmd == "rm":
-        cmd_delete(args)
-    elif cmd == "sync":
-        cmd_sync(args)
-    else:
-        sys.exit(f"comando desconocido: {cmd}\n\n{USAGE}")
-
-
-if __name__ == "__main__":
-    main(sys.argv[1:])
