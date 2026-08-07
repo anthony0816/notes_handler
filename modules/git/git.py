@@ -1,14 +1,14 @@
-import  sys 
+import sys
+import subprocess
 from datetime import datetime
 from todo import notes_root
-import subprocess
 
 
 def cmd_sync(args):
     root = notes_root()
     if not (root / ".git").exists():
         sys.exit(f"error: no es repo git: {root}")
-    message = " ".join(args) or f"notas: {datetime.datetime.now():%Y-%m-%d %H:%M}"
+    message = " ".join(args) or f"notas: {datetime.now():%Y-%m-%d %H:%M}"
     add = run_git(root, ["add", "-A"])
     if "error" in add.stderr.lower():
         sys.exit(f"git add fallo: {add.stderr}")

@@ -52,11 +52,6 @@ def parse_task(line):
     return done, m.group(1), m.group(3).strip()
 
 
-def task_text(line):
-    parsed = parse_task(line)
-    return parsed[2] if parsed else None
-
-
 def cmd_list(args):
     lines = read_lines(todo_path())
     mode = "pending"
@@ -170,9 +165,6 @@ def cmd_delete(args):
         print(f"sin coincidencias: {', '.join(unknown)}", file=sys.stderr)
 
 
-
-
-
 USAGE = """todo - gestion de tareas TODO (Obsidian + git)
 
 USO:
@@ -191,5 +183,5 @@ DETALLES:
   - Cada tarea es una linea: - [ ] Titulo: descripcion
   - [x] = hecha. El id es el numero de linea (puede cambiar al editar).
   - Los ids aceptan tambien busqueda por texto parcial.
-  - Config: .env junto al script (NOTES_ROOT) o variable de entorno.
+  - Config: .env junto al script (NOTES_ROOT, NOTES_TODO opcional).
 """

@@ -31,8 +31,7 @@ NOTES_ROOT=C:\Antonio\Notes
 ```
 
 `NOTES_ROOT` es obligatoria (el CLI falla con un error claro si no está).
-Opcionalmente `NOTES_TODO` (por defecto `TODO/TODO/TODO.md`, relativo al vault).
-También se pueden sobreescribir con variables de entorno del sistema.
+Opcionalmente `NOTES_TODO` (por defecto `TODO/TODO.md`, relativo al vault).
 `.env` está en `.gitignore`; solo se versiona `.env.example`.
 
 ## Comandos
@@ -68,7 +67,7 @@ completa (`C:\Antonio\Python\Proyectos\notes_handler\todo.cmd`):
    ```
 5. Aceptá todo y **abrí una terminal nueva** (el PATH ya cargado no se actualiza).
 
-Por las instrucciones, se ejecuta `todo.cmd` que llama a `python todo.py`.
+Por las instrucciones, se ejecuta `todo.cmd` que llama a `python todo_main.py`.
 
 ## Uso con agentes de IA (opencode)
 

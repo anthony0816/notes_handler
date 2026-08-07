@@ -10,8 +10,8 @@ El usuario gestiona sus notas en un vault Obsidian versionado con git en
 
 El archivo de tareas es `C:\Antonio\Notes\TODO\TODO\TODO.md`.
 
-Las rutas del vault se configuran en `.env` (NOTES_ROOT) o por variable de
-entorno; ver README.md.
+Las rutas del vault se configuran en `.env` (NOTES_ROOT obligatoria,
+NOTES_TODO opcional, default `TODO/TODO.md`); ver README.md.
 
 ## Protocolo de tareas
 
