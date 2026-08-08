@@ -67,7 +67,7 @@ def _cell_text(item, width):
 
 def _print_header(text_width):
     width = 4 + 2 + STATE_W + 2 + text_width
-    print(f"{BOLD}{CYAN}{'ID':>4}{RESET}  {BOLD}{CYAN}{'ESTADO':<{STATE_W}}{RESET}  {BOLD}{CYAN}TAREA{RESET}")
+    print(f"{BOLD}{CYAN}{'ESTADO':<{STATE_W}}{RESET}  {BOLD}{CYAN}{'ID':>4}{RESET}  {BOLD}{CYAN}TAREA{RESET}")
     print(f"{DIM}{CYAN}{'-' * width}{RESET}")
 
 
@@ -98,5 +98,5 @@ def pretty_print_list(args):
     text_width = _text_width(items)
     _print_header(text_width)
     for it in items:
-        print(f"{_cell_id(it)}  {_cell_state(it)}  {_cell_text(it, text_width)}")
+        print(f" {_cell_state(it)}  {_cell_id(it)}  {_cell_text(it, text_width)}")
     _summary(all_items)
