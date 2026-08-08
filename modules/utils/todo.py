@@ -46,6 +46,13 @@ def parse_task(line):
     return done, m.group(1), m.group(3).strip()
 
 
+def split_task_text(text):
+    title, sep, desc = text.partition(":");
+    if not sep:
+        return text.strip(), ""
+    return title.strip(), desc.strip()
+
+
 def filter_task(done, mode):
     if mode == "all":
         return True

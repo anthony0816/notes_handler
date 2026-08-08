@@ -23,7 +23,8 @@ solo contiene la herramienta.
 
 | Ruta | Qué vive ahí |
 | --- | --- |
-| `todo_main.py` | Entrypoint. Solo el dispatch de comandos CLI; para `list` decide entre `todo.py` y el módulo `prittier` según `config`. |
+| `todo_main.py` | Entrypoint. Solo el dispatch de comandos CLI hacia el `TodoController`. |
+| `todo_controller.py` | `TodoController`: orquesta los comandos; decide entre `todo.py` y `prittier` según `config` para `list`. |
 | `todo.py` | Comandos CRUD (`cmd_create`, `cmd_list`, `cmd_edit`, `cmd_toggle`, `cmd_delete`) + `USAGE`. NO tocar su lógica para integrar features nuevas. |
 | `modules/utils/todo.py` | Helpers compartidas: `notes_root`, `todo_path`, `read_lines`, `write_lines`, `parse_task`, `todo_items`, `filter_task`, `mode_from_args`, constantes `TASK_RE`, `DEFAULT_TODO_REL`, `ENV`. |
 | `modules/env/env.py` | Carga del `.env` (`load_env`). |
@@ -31,17 +32,18 @@ solo contiene la herramienta.
 | `modules/prittier/prittier.py` | Listado con colores (`pretty_print_list`) + soporte ANSI en Windows. |
 | `modules/git/git.py` | Operaciones git (`cmd_sync`). |
 | `todo.cmd` / `todo.sh` | Wrappers Windows/bash que llaman a `todo_main.py`. |
+| `tests/` | Suite `unittest` (stdlib) con aislamiento: vault y config temp, nunca toca el `.env`/`config.json`/vault reales. |
 | `skill/todo-notes/SKILL.md` | Skill de opencode que viaja en el repo; copiar a `~/.config/opencode/skills/` para activarla. |
 | `.env.example` | Plantilla de config del vault (`.env` real no se versiona). |
 
 ## Dónde va cada cosa
 
-- **Nuevo comando CLI** → función `cmd_*` en `todo.py` + registro en
-  `todo_main.py` + entrada en `USAGE` y en la skill.
+- **Nuevo comando CLI** → función `cmd_*` en `todo.py` + método en
+  `TodoController` + registro en `todo_main.py` + entrada en `USAGE` y en la skill.
 - **Lógica reutilizable** (parseo, rutas, I/O de archivos) → `modules/utils/todo.py`.
 - **Feature de presentación/UI** de un comando existente (ej. listado bonito) →
-  módulo propio (`modules/prittier/`) y el dispatch decide en `todo_main.py`
-  según config; NO tocar la lógica CRUD de `todo.py`.
+  módulo propio (`modules/prittier/`) y el `TodoController` decide según
+  config; NO tocar la lógica CRUD de `todo.py`.
 - **Preferencias activables** → `modules/config/config.py` (schema + persistencia
   en `config.json`).
 - **Algo específico de git** → `modules/git/git.py`.
@@ -61,9 +63,15 @@ solo contiene la herramienta.
 ## Verificación
 
 ```console
-python -m py_compile todo.py todo_main.py modules/env/env.py modules/git/git.py modules/utils/todo.py
+python -m py_compile todo.py todo_main.py todo_controller.py modules/env/env.py modules/git/git.py modules/utils/todo.py
+python -m unittest discover
 python todo_main.py list
 ```
+
+Los tests (`tests/`) inyectan `ENV["NOTES_ROOT"]`/`NOTES_TODO` y `CONFIG_FILE`
+en directorios temporales (`tempfile`); nunca afectan `.env`, `config.json` ni
+el vault real. `cmd_sync` no se testea (hace push de verdad); a lo sumo se
+prueba `run_git` sobre un repo git temp.
 
 `todo_main.py sync` hace `git add -A` + commit + push sobre el repo del vault
 (externo). OJO: toca git de verdad (pide confirmación al usuario si no la hay).
