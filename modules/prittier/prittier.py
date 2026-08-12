@@ -50,10 +50,10 @@ def _cell_id(item):
 
 def _cell_state(item):
     if item["done"]:
-        visible = "[x] hecha"
+        visible = "[x] done"
         color = GREEN
     else:
-        visible = "[ ] pendiente"
+        visible = "[ ] pending"
         color = YELLOW
     return f"{BOLD}{color}{visible:<{STATE_W}}{RESET}"
 
@@ -67,7 +67,7 @@ def _cell_text(item, width):
 
 def _print_header(text_width):
     width = 4 + 2 + STATE_W + 2 + text_width
-    print(f"{BOLD}{CYAN}{'ESTADO':<{STATE_W}}{RESET}  {BOLD}{CYAN}{'ID':>4}{RESET}  {BOLD}{CYAN}TAREA{RESET}")
+    print(f"{BOLD}{CYAN}{'STATE':<{STATE_W}}{RESET}  {BOLD}{CYAN}{'ID':>4}{RESET}  {BOLD}{CYAN}TASK{RESET}")
     print(f"{DIM}{CYAN}{'-' * width}{RESET}")
 
 
@@ -81,9 +81,9 @@ def _summary(all_items):
     label_done = GREEN if done else DIM
     label_pend = YELLOW if pending else DIM
     print(
-        f"{BOLD}{MAGENTA}{total}{RESET} tareas | "
-        f"{label_done}{done} hechas{RESET} | "
-        f"{label_pend}{pending} pendientes{RESET}"
+        f"{BOLD}{MAGENTA}{total}{RESET} tasks | "
+        f"{label_done}{done} done tasks{RESET} | "
+        f"{label_pend}{pending} pending tasks{RESET}"
     )
 
 
