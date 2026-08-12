@@ -146,7 +146,7 @@ def cmd_delete(args):
 USAGE = """todo - gestion de tareas TODO (Obsidian + git)
 
 USO:
-  todo create "Titulo" ["descripcion"]    crea tarea
+  todo create [-p low|mid|max] "Titulo" ["descripcion"]   crea tarea (prioridad default: low)
   todo list [--all|--done|--pending]     lista (default: pendientes)
   todo edit <id> "nuevo texto"           reemplaza titulo/descripcion
   todo done <id|texto> [otras...]        marca como hecha
@@ -156,6 +156,11 @@ USO:
   todo help                              este texto
 
 ATAJOS: add == create, rm == delete, ls == list.
+
+PRIORIDADES (create -p):
+  - l / low -> (low) ; m / mid / middle -> (mid) ; max / hight -> (max)
+  - el tag (prioridad) va al inicio del titulo y el listado con colores lo
+    reemplaza por color (blanco/azul/rojo), sin mostrarlo.
 
 DETALLES:
   - Cada tarea es una linea: - [ ] Titulo: descripcion
