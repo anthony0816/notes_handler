@@ -14,7 +14,7 @@ CYAN = "\033[36m"
 MAGENTA = "\033[35m"
 WHITE = "\033[97m"
 
-STATE_W = 13
+STATE_W = 7
 MODE_LABEL = {"all": "todas", "done": "hechas", "pending": "pendientes"}
 
 
@@ -53,7 +53,7 @@ def _cell_state(item):
         visible = "[x] done"
         color = GREEN
     else:
-        visible = "[ ] pending"
+        visible = "[ ] pend"
         color = YELLOW
     return f"{BOLD}{color}{visible:<{STATE_W}}{RESET}"
 
