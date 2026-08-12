@@ -1,8 +1,7 @@
 import os
-import re
 import shutil
 
-from modules.utils.todo import filter_task, mode_from_args, todo_items
+from modules.utils.todo import filter_task, mode_from_args, split_priority, todo_items
 
 RESET = "\033[0m"
 BOLD = "\033[1m"
@@ -19,7 +18,6 @@ WHITE = "\033[97m"
 STATE_W = 7
 MODE_LABEL = {"all": "todas", "done": "hechas", "pending": "pendientes"}
 
-PRIORITY_RE = re.compile(r"^\(\s*(low|mid|max)\s*\)\s*(.*)$", re.IGNORECASE)
 PRIORITY_COLOR = {"low": WHITE, "mid": BLUE, "max": RED}
 
 
@@ -64,11 +62,10 @@ def _cell_state(item):
 
 
 def _cell_text(item, width):
-    m = PRIORITY_RE.match(item["text"])
-    priority = m.group(1).lower() if m else "low"
-    color = PRIORITY_COLOR[priority]
+    priority, rest = split_priority(item["text"])
+    color = PRIORITY_COLOR[priority] if priority else WHITE
     bold = BOLD if not item["done"] and priority in ("mid", "max") else ""
-    body = _clip(m.group(2) if m else item["text"], width)
+    body = _clip(rest, width)
     if item["done"]:
         return f"{DIM}{color}{STRIKE}{body}{RESET}"
     return f"{bold}{color}{body}{RESET}"

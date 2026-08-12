@@ -33,9 +33,9 @@ directorio del proyecto (donde esta `todo.py`).
 
 | Comando | Efecto |
 | --- | --- |
-| `todo create "Titulo" ["desc"]` | crea tarea al final del archivo |
+| `todo create [-p low\|mid\|max] "Titulo" ["desc"]` | crea tarea al final del archivo con prioridad (default `low`) |
 | `todo list [--all\|--done\|--pending]` | lista tareas (default: pendientes) con su id |
-| `todo edit <id> "nuevo texto"` | reemplaza titulo/descripcion de una tarea |
+| `todo edit <id> ["p <prio>"] ["texto"]` | edita texto (conserva prioridad); con `p` cambia la prioridad |
 | `todo done <id o texto>` | marca como hecha (`- [x]`) |
 | `todo undo <id o texto>` | vuelve a abrir (`- [ ]`) |
 | `todo delete <id o texto>` | elimina la linea |
@@ -44,6 +44,9 @@ directorio del proyecto (donde esta `todo.py`).
 | `todo help` | ayuda |
 
 Atajos: `add` = `create`, `rm` = `delete`, `ls` = `list`.
+
+Prioridades: `-p`/`p` acepta `low, l`, `m, mid, middle`, `max, hight` (tag
+`(prio)` al inicio del titulo). Editar texto sin `p` conserva la prioridad.
 
 `todo list` delega en el módulo `prittier` (colores) si la config
 `active_prittier` está activa; si no, usa el listado plano.

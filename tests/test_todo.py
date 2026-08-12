@@ -48,6 +48,35 @@ class EditTests(TempVaultTestCase):
         with self.assertRaises(SystemExit):
             self.run_cmd(cmd_edit, ["1"])
 
+    def test_edit_keeps_priority_on_title_change(self):
+        self.write_vault("- [ ] (max) Hacer pan\n")
+        self.run_cmd(cmd_edit, ["1", "Comprar leche"])
+        lines = utils.read_lines(utils.todo_path())
+        self.assertEqual("- [ ] (max) Comprar leche", lines[0])
+
+    def test_edit_changes_priority_only(self):
+        self.write_vault("- [ ] (low) Hacer pan\n")
+        self.run_cmd(cmd_edit, ["1", "p", "max"])
+        lines = utils.read_lines(utils.todo_path())
+        self.assertEqual("- [ ] (max) Hacer pan", lines[0])
+
+    def test_edit_changes_priority_and_text(self):
+        self.write_vault("- [ ] (low) Hacer pan\n")
+        self.run_cmd(cmd_edit, ["1", "p", "mid", "Reunion", "con el equipo"])
+        lines = utils.read_lines(utils.todo_path())
+        self.assertEqual("- [ ] (mid) Reunion con el equipo", lines[0])
+
+    def test_edit_keeps_status_when_changing_priority(self):
+        self.write_vault("- [x] (mid) Hecho\n")
+        self.run_cmd(cmd_edit, ["1", "-p", "low"])
+        lines = utils.read_lines(utils.todo_path())
+        self.assertEqual("- [x] (low) Hecho", lines[0])
+
+    def test_edit_invalid_priority_exits(self):
+        self.write_vault("- [ ] (low) Hacer pan\n")
+        with self.assertRaises(SystemExit):
+            self.run_cmd(cmd_edit, ["1", "p", "urgente"])
+
 
 class ToggleTests(TempVaultTestCase):
     def test_done(self):

@@ -43,7 +43,7 @@ Opcionalmente `NOTES_TODO` (por defecto `TODO/TODO.md`, relativo al vault).
 ```console
 todo create [-p <prioridad>] "Título" ["descripción"]   crea una tarea
 todo list [--all|--done|--pending]     lista tareas (default: pendientes)
-todo edit <id> "nuevo texto"           cambia título/descripción
+todo edit <id> <"p <prioridad>"> ["nuevo título"]   edita texto/prioridad
 todo done <id|texto> [otras...]        marca como hecha (- [x])
 todo undo <id|texto> [otras...]        vuelve a abrir (- [ ])
 todo delete <id|texto> [otras...]      elimina la línea
@@ -74,6 +74,20 @@ Sin `-p` la prioridad es `low`. Con `-p` se aceptan estas etiquetas:
 | `low`, `l` | `(low)` |
 | `m`, `mid`, `middle` | `(mid)` |
 | `max`, `hight` | `(max)` |
+
+### Editar prioridad de una tarea existente
+
+`todo edit` acepta el mismo flag `p` para cambiar la prioridad, con opción de
+editar también el texto:
+
+```console
+> todo edit 3 p max                          # solo cambia la prioridad
+> todo edit 3 p mid "Nuevo título"           # prioridad + título/desc
+> todo edit 3 "Nuevo título"                 # edita texto, MANTIENE la prioridad actual
+```
+
+Igual que `create`, acepta `-p` o `p` y las etiquetas de la tabla. Si editás el
+texto sin `p`, el tag de prioridad existente se conserva (no se pierde).
 
 En el listado con colores (`prittier`) el tag **no se muestra**: se reemplaza
 por el color de la prioridad. `low` en blanco, `mid` en azul brillante y `max`

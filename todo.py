@@ -7,7 +7,15 @@ Tareas: lineas "- [ ] Titulo: descripcion" en TODO.md.
 
 import sys
 
-from modules.utils.todo import TASK_RE, parse_task, read_lines, todo_path, write_lines
+from modules.utils.todo import (
+    PRIORITY_LABELS,
+    TASK_RE,
+    parse_task,
+    read_lines,
+    split_priority,
+    todo_path,
+    write_lines,
+)
 
 
 def cmd_list(args):
@@ -93,18 +101,34 @@ def cmd_create(args):
 
 def cmd_edit(args):
     if not args:
-        sys.exit('error: usa `todo edit <id> "nuevo texto"`')
+        sys.exit('error: usa `todo edit <id> ["p <prio>"] "nuevo texto"`')
     path = todo_path()
     lines = read_lines(path)
     targets, unknown = find_targets(lines, args[:1])
     if not targets:
         sys.exit("no se encontro la tarea")
-    new_text = " ".join(args[1:])
-    if not new_text:
+    rest = args[1:]
+    priority = None
+    if rest and rest[0] in ("p", "-p"):
+        if len(rest) < 2:
+            sys.exit('error: `todo edit <id> p <low|mid|max> ["nuevo texto"]`')
+        label = rest[1].lower()
+        if label not in PRIORITY_LABELS:
+            sys.exit(f"priority state not supported, examples: {list(PRIORITY_LABELS)}")
+        priority = PRIORITY_LABELS[label]
+        rest = rest[2:]
+    new_text = " ".join(rest)
+    if priority is None and not new_text:
         sys.exit("error: falta el nuevo texto")
     i = targets[0]
     m = TASK_RE.match(lines[i - 1])
-    lines[i - 1] = f"{m.group(1)}- [{m.group(2)}] {new_text}"
+    existing, body = split_priority(m.group(3))
+    if priority is not None:
+        keep = body if not new_text else new_text
+        new_body = f"({priority}) {keep}"
+    else:
+        new_body = f"({existing}) {new_text}" if existing else new_text
+    lines[i - 1] = f"{m.group(1)}- [{m.group(2)}] {new_body}"
     write_lines(path, lines)
     print(f"editada [{i}]: {lines[i - 1]}")
     if unknown:
@@ -148,7 +172,7 @@ USAGE = """todo - gestion de tareas TODO (Obsidian + git)
 USO:
   todo create [-p low|mid|max] "Titulo" ["descripcion"]   crea tarea (prioridad default: low)
   todo list [--all|--done|--pending]     lista (default: pendientes)
-  todo edit <id> "nuevo texto"           reemplaza titulo/descripcion
+  todo edit <id> ["p <prio>"] ["texto"]  edita texto (conserva prioridad); con `p` cambia prioridad
   todo done <id|texto> [otras...]        marca como hecha
   todo undo <id|texto> [otras...]        vuelve a abrir
   todo delete <id|texto> [otras...]      elimina linea(s)
@@ -157,10 +181,12 @@ USO:
 
 ATAJOS: add == create, rm == delete, ls == list.
 
-PRIORIDADES (create -p):
+PRIORIDADES (create -p / edit p):
   - l / low -> (low) ; m / mid / middle -> (mid) ; max / hight -> (max)
+  - todo create -p mid "Titulo" [desc] ; todo edit 3 p max ["Texto"]
   - el tag (prioridad) va al inicio del titulo y el listado con colores lo
     reemplaza por color (blanco/azul/rojo), sin mostrarlo.
+  - editar el texto sin `p` mantiene la prioridad actual.
 
 DETALLES:
   - Cada tarea es una linea: - [ ] Titulo: descripcion

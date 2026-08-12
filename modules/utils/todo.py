@@ -6,6 +6,16 @@ from modules.env.env import load_env
 
 DEFAULT_TODO_REL = "TODO/TODO.md"
 TASK_RE = re.compile(r"^(\s*)- \[([ xX])\](.*)$")
+PRIORITY_RE = re.compile(r"^\(\s*(low|mid|max)\s*\)\s*(.*)$", re.IGNORECASE)
+PRIORITY_LABELS = {
+    "l": "low",
+    "low": "low",
+    "m": "mid",
+    "mid": "mid",
+    "middle": "mid",
+    "max": "max",
+    "hight": "max",
+}
 ENV = load_env()
 
 
@@ -47,10 +57,17 @@ def parse_task(line):
 
 
 def split_task_text(text):
-    title, sep, desc = text.partition(":");
+    title, sep, desc = text.partition(":")
     if not sep:
         return text.strip(), ""
     return title.strip(), desc.strip()
+
+
+def split_priority(text):
+    m = PRIORITY_RE.match(text.strip())
+    if m:
+        return m.group(1).lower(), m.group(2).strip()
+    return None, text.strip()
 
 
 def filter_task(done, mode):
