@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 
 from modules.utils.todo import filter_task, mode_from_args, todo_items
@@ -7,15 +8,19 @@ RESET = "\033[0m"
 BOLD = "\033[1m"
 DIM = "\033[2m"
 STRIKE = "\033[9m"
-RED = "\033[31m"
+RED = "\033[91m"
 GREEN = "\033[32m"
 YELLOW = "\033[33m"
+BLUE = "\033[94m"
 CYAN = "\033[36m"
 MAGENTA = "\033[35m"
 WHITE = "\033[97m"
 
 STATE_W = 7
 MODE_LABEL = {"all": "todas", "done": "hechas", "pending": "pendientes"}
+
+PRIORITY_RE = re.compile(r"^\(\s*(low|mid|max)\s*\)\s*(.*)$", re.IGNORECASE)
+PRIORITY_COLOR = {"low": WHITE, "mid": BLUE, "max": RED}
 
 
 def enable_ansi():
@@ -59,10 +64,14 @@ def _cell_state(item):
 
 
 def _cell_text(item, width):
-    body = _clip(item["text"], width)
+    m = PRIORITY_RE.match(item["text"])
+    priority = m.group(1).lower() if m else "low"
+    color = PRIORITY_COLOR[priority]
+    bold = BOLD if not item["done"] and priority in ("mid", "max") else ""
+    body = _clip(m.group(2) if m else item["text"], width)
     if item["done"]:
-        return f"{DIM}{GREEN}{STRIKE}{body}{RESET}"
-    return f"{WHITE}{body}{RESET}"
+        return f"{DIM}{color}{STRIKE}{body}{RESET}"
+    return f"{bold}{color}{body}{RESET}"
 
 
 def _print_header(text_width):

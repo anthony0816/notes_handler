@@ -10,14 +10,14 @@ class CreateTests(TempVaultTestCase):
         self.write_vault()
         out = self.run_cmd(cmd_create, ["Nueva", "con detalle"])
         lines = utils.read_lines(utils.todo_path())
-        self.assertEqual("- [ ] Nueva: con detalle", lines[-1])
+        self.assertEqual("- [ ] (low) Nueva: con detalle", lines[-1])
         self.assertIn("creada", out)
 
     def test_without_desc(self):
         self.write_vault()
         self.run_cmd(cmd_create, ["Sola"])
         lines = utils.read_lines(utils.todo_path())
-        self.assertEqual("- [ ] Sola", lines[-1])
+        self.assertEqual("- [ ] (low) Sola", lines[-1])
 
     def test_requires_title(self):
         self.write_vault()

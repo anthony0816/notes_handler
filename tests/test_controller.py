@@ -33,4 +33,4 @@ class RoutingTests(TempVaultTestCase):
         self.run_cmd(ctrl.done, ["1"])
         lines = self._lines()
         self.assertEqual("- [x] H1: integral", lines[0])
-        self.assertEqual("- [ ] Nueva: desc", lines[-1])
+        self.assertEqual("- [ ] (low) Nueva: desc", lines[-1])
