@@ -59,11 +59,31 @@ def find_targets(lines, args):
 
 
 def cmd_create(args):
+    priority_flags = ['p', '-p']
+    priority_labels = ['low','l','m','mid','middle', 'max', 'hight']
+    priority_dic = {
+        priority_labels[0] : 'low', 
+        priority_labels[1] : "low",
+        priority_labels[2] : "mid", 
+        priority_labels[3] : "mid",
+        priority_labels[4] : "mid",
+        priority_labels[5] : "max",
+        priority_labels[6] : "max"
+    }
     if not args:
         sys.exit('error: usa `todo create "Titulo" ["descripcion"]`')
     title = args[0]
     desc = " ".join(args[1:])
-    task = f"- [ ] {title}" + (f": {desc}" if desc else "")
+    priority =  'low'
+    
+    if args[0].lower() in priority_flags:
+        if args[1].lower() not in priority_labels : 
+            return  print(f'Priority state not suported, examples: {priority_labels.__str__()}')
+        title = args[2]
+        desc = " ".join(args[3:])
+        priority = priority_dic.get(args[1].lower())
+    
+    task = f"- [ ] ({priority}) {title}" + (f": {desc}" if desc else "")
     path = todo_path()
     lines = read_lines(path)
     lines.append(task)
