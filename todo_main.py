@@ -22,6 +22,7 @@ def main(argv):
         "rm": todo.delete,
         "sync": todo.sync,
         "config": todo.config,
+        "zoom" : todo.zoom
     }
     handler = handlers.get(cmd)
     if handler:

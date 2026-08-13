@@ -1,5 +1,6 @@
 import os
 import shutil
+import sys
 
 from modules.utils.todo import filter_task, mode_from_args, split_priority, todo_items
 
@@ -32,10 +33,12 @@ def enable_ansi():
             kernel32.SetConsoleMode(handle, ctable.value | 0x0004)
 
 
-def _text_width(items):
+def _text_width(items, full=False):
     cols = shutil.get_terminal_size().columns
     max_w = max(20, cols - 22)
     longest = max((len(it["text"]) for it in items), default=20)
+    if full:
+        return longest
     return min(max(longest, 20), max_w)
 
 
@@ -106,3 +109,17 @@ def pretty_print_list(args):
     for it in items:
         print(f" {_cell_state(it)}  {_cell_id(it)}  {_cell_text(it, text_width)}")
     _summary(all_items)
+    
+def pretty_zoom_tasks(args):
+    if not args:
+        sys.exit('error: todo zoom <id1> <id2> ...')
+    all_items =  todo_items()
+    for  arg in args :
+        arg = int(arg)
+        if arg < 1 or arg > len(all_items):
+            print(f'{arg} - no encontrado')
+            continue
+        item =  all_items[arg - 1]
+        
+        print(f" {_cell_state(item)}  {_cell_id(item)}  {_cell_text(item, _text_width([item], full=True))}")
+    

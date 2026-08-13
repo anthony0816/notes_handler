@@ -165,6 +165,17 @@ def cmd_delete(args):
     write_lines(path, lines)
     if unknown:
         print(f"sin coincidencias: {', '.join(unknown)}", file=sys.stderr)
+        
+def cmd_zoom(args):
+    if not args:
+        sys.exit('error: todo zoom <id1> <id2> ...')
+    lines = read_lines(todo_path())
+    for  arg in args :
+        arg = int(arg)
+        if arg < 1 or arg > len(lines):
+            print(f'{arg} - no encontrado')
+            continue
+        print(lines[arg - 1])
 
 
 USAGE = """todo - gestion de tareas TODO (Obsidian + git)
