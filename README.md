@@ -47,6 +47,7 @@ todo edit <id> <"p <prioridad>"> ["nuevo título"]   edita texto/prioridad
 todo done <id|texto> [otras...]        marca como hecha (- [x])
 todo undo <id|texto> [otras...]        vuelve a abrir (- [ ])
 todo delete <id|texto> [otras...]      elimina la línea
+todo zoom <id> [más ids...]            muestra la tarea con su detalle completo (sin recortar)
 todo sync ["mensaje"]                  git add -A + commit + push
 todo help                              muestra esta ayuda
 ```
@@ -55,6 +56,21 @@ Atajos: `add` = `create`, `ls` = `list`, `rm` = `delete`.
 
 Los ids aceptan también búsqueda por texto parcial. Releé con `todo list`
 después de cada operación porque los números de línea pueden cambiar.
+
+### Zoom: ver el detalle completo de una tarea
+
+El listado recorta los textos largos con `...` para ajustarse al ancho de la
+terminal. `todo zoom` muestra la tarea con su texto **íntegro**, sin recortar:
+
+```console
+> todo zoom 3 7
+```
+
+Se pueden pasar varios ids a la vez. Si algún id no existe, avisa
+`N - no encontrado` y sigue con los demás. Con el listado de colores activo
+(`active_prittier`), el detalle se muestra con el formato de la prioridad
+(color, negrita y estado); en modo plano se muestra la línea tal cual está en
+el archivo (incluido el tag `(prioridad)`).
 
 ## Prioridades
 
