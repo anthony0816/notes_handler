@@ -187,6 +187,7 @@ USO:
   todo done <id|texto> [otras...]        marca como hecha
   todo undo <id|texto> [otras...]        vuelve a abrir
   todo delete <id|texto> [otras...]      elimina linea(s)
+  todo zoom <id1> <id2> ...              muestra el detalle completo (sin recortar)
   todo sync ["mensaje"]                  git add -A + commit + push
   todo help                              este texto
 
