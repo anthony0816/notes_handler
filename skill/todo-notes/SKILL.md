@@ -39,6 +39,7 @@ directorio del proyecto (donde esta `todo.py`).
 | `todo done <id o texto>` | marca como hecha (`- [x]`) |
 | `todo undo <id o texto>` | vuelve a abrir (`- [ ]`) |
 | `todo delete <id o texto>` | elimina la linea |
+| `todo zoom <id> [mas ids...]` | muestra el detalle completo de la tarea (sin recortar) |
 | `todo sync ["mensaje"]` | `git add -A` + commit + push del repo completo |
 | `todo config list\|get\|set` | preferencias (ej. `active_prittier` para colores) |
 | `todo help` | ayuda |
@@ -68,5 +69,7 @@ Para que un agente de opencode la use, copiarla (o apuntar skills.paths) a:
 2. Para marcar hecha una tarea que el usuario nombra: `todo list`, ubicar el
    id y `todo done <id>`. Si no se encuentra, crear con `create`.
 3. Para cambiar el texto de una tarea: `todo edit <id> "nuevo texto"`.
-4. Cuando el usuario pida guardar/actualizar todo: `todo sync`.
-5. No editar TODO.md a mano salvo caso excepcional; siempre via `todo.py`.
+4. Para ver el detalle completo de una tarea recortada en el listado:
+   `todo zoom <id>`.
+5. Cuando el usuario pida guardar/actualizar todo: `todo sync`.
+6. No editar TODO.md a mano salvo caso excepcional; siempre via `todo.py`.
