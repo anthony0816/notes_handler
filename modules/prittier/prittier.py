@@ -26,10 +26,31 @@ CYAN = "\033[36m"
 MAGENTA = "\033[35m"
 WHITE = "\033[97m"
 
-STATE_W = 7
+STATE_W = 0
 MODE_LABEL = {"all": "todas", "done": "hechas", "pending": "pendientes"}
 
 PRIORITY_COLOR = {"low": WHITE, "mid": BLUE, "max": RED}
+MONTHS_ES = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+]
+
+
+def _month_name(title):
+    parts = title.split("/")
+    if len(parts) == 3 and parts[1].isdigit() and 1 <= int(parts[1]) <= 12:
+        return f"{parts[0]}/{MONTHS_ES[int(parts[1]) - 1]}/{parts[2]}"
+    return title
 
 
 def enable_ansi():
@@ -66,10 +87,10 @@ def _cell_id(item):
 
 def _cell_state(item):
     if item["done"]:
-        visible = "[x] done"
+        visible = "[x]"
         color = GREEN
     else:
-        visible = "[ ] pend"
+        visible = "[ ]"
         color = YELLOW
     return f"{BOLD}{color}{visible:<{STATE_W}}{RESET}"
 
@@ -122,7 +143,7 @@ def pretty_print_list(args):
         if not seg_items:
             continue
         if seg["date"] and seg["date"].strip() != UNKNOWN_SEGMENT:
-            title = segment_title(seg["date"])
+            title = _month_name(segment_title(seg["date"]))
             total = text_width + 15
             dashes = max(0, total - len(title))
             left = dashes // 2
