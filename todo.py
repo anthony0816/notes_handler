@@ -9,10 +9,15 @@ import sys
 
 from modules.utils.todo import (
     PRIORITY_LABELS,
+    SEPARATOR,
     TASK_RE,
+    UNKNOWN_SEGMENT,
+    is_segment_header,
+    is_today_segment,
     parse_task,
     read_lines,
     split_priority,
+    today_segment,
     todo_path,
     write_lines,
 )
@@ -27,6 +32,14 @@ def cmd_list(args):
         mode = "done"
     shown = False
     for i, line in enumerate(lines, 1):
+        if (
+            is_segment_header(line)
+            or line.strip() == SEPARATOR
+            or line.strip() == UNKNOWN_SEGMENT
+        ):
+            print(line)
+            shown = True
+            continue
         parsed = parse_task(line)
         if not parsed:
             continue
@@ -94,7 +107,36 @@ def cmd_create(args):
     task = f"- [ ] ({priority}) {title}" + (f": {desc}" if desc else "")
     path = todo_path()
     lines = read_lines(path)
-    lines.append(task)
+    today = today_segment()
+    header = None
+    for i, line in enumerate(lines, 1):
+        if is_today_segment(line):
+            header = i
+    if header is None:
+        has_segments = any(is_segment_header(line) for line in lines)
+        if not has_segments and lines:
+            first_task = None
+            for i, line in enumerate(lines, 1):
+                if parse_task(line):
+                    first_task = i
+                    break
+            if first_task is not None:
+                lines.insert(first_task - 1, UNKNOWN_SEGMENT)
+        if lines and lines[-1].strip():
+            lines.append("")
+        lines.append(SEPARATOR)
+        lines.append(today)
+        lines.append(task)
+    else:
+        last_task = None
+        for i in range(header + 1, len(lines) + 1):
+            if is_segment_header(lines[i - 1]):
+                break
+            if parse_task(lines[i - 1]):
+                last_task = i
+        if last_task is None:
+            last_task = header
+        lines.insert(last_task, task)
     write_lines(path, lines)
     print(f"creada [{len(lines)}]: {task}")
 
@@ -189,6 +231,7 @@ USO:
   todo delete <id|texto> [otras...]      elimina linea(s)
   todo zoom <id1> <id2> ...              muestra el detalle completo (sin recortar)
   todo sync ["mensaje"]                  git add -A + commit + push
+  todo restore [--yes]                   descarta los cambios sin commitear del vault
   todo help                              este texto
 
 ATAJOS: add == create, rm == delete, ls == list.
@@ -204,5 +247,6 @@ DETALLES:
   - Cada tarea es una linea: - [ ] Titulo: descripcion
   - [x] = hecha. El id es el numero de linea (puede cambiar al editar).
   - Los ids aceptan tambien busqueda por texto parcial.
+  - restore: git reset --hard HEAD en el vault (pide confirmacion; --yes la saltea).
   - Config: .env junto al script (NOTES_ROOT, NOTES_TODO opcional).
 """

@@ -1,3 +1,4 @@
+import datetime
 import re
 import sys
 from pathlib import Path
@@ -16,6 +17,9 @@ PRIORITY_LABELS = {
     "max": "max",
     "hight": "max",
 }
+DATE_RE = re.compile(r"^##\s*(\d{4})/(\d{1,2})/(\d{1,2})\s*$")
+SEPARATOR = "---"
+UNKNOWN_SEGMENT = "## Unknown Date"
 ENV = load_env()
 
 
@@ -94,3 +98,48 @@ def todo_items():
             done, _, text = parsed
             items.append({"id": i, "done": done, "line": line, "text": text})
     return items
+
+
+#======= Time Segmentation ===========
+
+def today_segment():
+    d = datetime.date.today()
+    return f"## {d.year}/{d.month}/{d.day}"
+
+
+def segment_title(line):
+    m = DATE_RE.match(line)
+    if not m:
+        return None
+    y, mo, d = (int(x) for x in m.groups())
+    return f"{y}/{mo}/{d}"
+
+
+def segment_date(line):
+    m = DATE_RE.match(line)
+    return tuple(int(x) for x in m.groups()) if m else None
+
+
+def is_segment_header(line):
+    return DATE_RE.match(line) is not None
+
+
+def is_today_segment(line):
+    d = segment_date(line)
+    if not d:
+        return False
+    t = datetime.date.today()
+    return d == (t.year, t.month, t.day)
+
+
+def parse_segments(lines):
+    segments = []
+    current = {"date": None, "task_idx": []}
+    for i, line in enumerate(lines, 1):
+        if is_segment_header(line) or line.strip() == UNKNOWN_SEGMENT:
+            segments.append(current)
+            current = {"date": line, "task_idx": []}
+        elif parse_task(line):
+            current["task_idx"].append(i)
+    segments.append(current)
+    return segments

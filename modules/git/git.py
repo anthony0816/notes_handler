@@ -25,6 +25,24 @@ def cmd_sync(args):
     print(push.stdout.strip())
     
     
+def cmd_restore(args):
+    root = notes_root()
+    if not (root / ".git").exists():
+        sys.exit(f"error: no es repo git: {root}")
+    if "--yes" not in args and "-y" not in args:
+        answer = (
+            input("descartar todos los cambios sin commitear del vault? (si/no): ")
+            .strip()
+            .lower()
+        )
+        if answer not in ("si", "s", "yes", "y", "1"):
+            sys.exit("cancelado")
+    res = run_git(root, ["reset", "--hard", "HEAD"])
+    if res.returncode != 0:
+        sys.exit(f"git restore fallo: {res.stderr or res.stdout}")
+    print(res.stdout.strip() or "cambios descartados")
+
+
 def run_git(root, args):
     return subprocess.run(
         ["git", *args], cwd=root, capture_output=True, text=True, encoding="utf-8"

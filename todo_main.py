@@ -21,6 +21,7 @@ def main(argv):
         "delete": todo.delete,
         "rm": todo.delete,
         "sync": todo.sync,
+        "restore": todo.restore,
         "config": todo.config,
         "zoom" : todo.zoom
     }

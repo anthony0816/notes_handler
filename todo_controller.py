@@ -1,5 +1,5 @@
 from modules.config.config import cmd_config, get as config_get
-from modules.git.git import cmd_sync
+from modules.git.git import cmd_restore, cmd_sync
 from modules.prittier.prittier import pretty_print_list, pretty_zoom_tasks
 from todo import cmd_create, cmd_delete, cmd_edit, cmd_list, cmd_toggle, cmd_zoom
 
@@ -28,6 +28,9 @@ class TodoController:
 
     def sync(self, args):
         cmd_sync(args)
+
+    def restore(self, args):
+        cmd_restore(args)
 
     def config(self, args):
         cmd_config(args)

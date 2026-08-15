@@ -32,7 +32,6 @@ solo contiene la herramienta.
 | `modules/prittier/prittier.py` | Listado con colores (`pretty_print_list`) + soporte ANSI en Windows. |
 | `modules/git/git.py` | Operaciones git (`cmd_sync`). |
 | `todo.cmd` / `todo.sh` | Wrappers Windows/bash que llaman a `todo_main.py`. |
-| `tests/` | Suite `unittest` (stdlib) con aislamiento: vault y config temp, nunca toca el `.env`/`config.json`/vault reales. |
 | `skill/todo-notes/SKILL.md` | Skill de opencode que viaja en el repo; copiar a `~/.config/opencode/skills/` para activarla. |
 | `.env.example` | Plantilla de config del vault (`.env` real no se versiona). |
 
@@ -64,14 +63,8 @@ solo contiene la herramienta.
 
 ```console
 python -m py_compile todo.py todo_main.py todo_controller.py modules/env/env.py modules/git/git.py modules/utils/todo.py
-python -m unittest discover
 python todo_main.py list
 ```
-
-Los tests (`tests/`) inyectan `ENV["NOTES_ROOT"]`/`NOTES_TODO` y `CONFIG_FILE`
-en directorios temporales (`tempfile`); nunca afectan `.env`, `config.json` ni
-el vault real. `cmd_sync` no se testea (hace push de verdad); a lo sumo se
-prueba `run_git` sobre un repo git temp.
 
 `todo_main.py sync` hace `git add -A` + commit + push sobre el repo del vault
 (externo). OJO: toca git de verdad (pide confirmación al usuario si no la hay).

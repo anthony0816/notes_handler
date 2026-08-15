@@ -49,6 +49,7 @@ todo undo <id|texto> [otras...]        vuelve a abrir (- [ ])
 todo delete <id|texto> [otras...]      elimina la línea
 todo zoom <id> [más ids...]            muestra la tarea con su detalle completo (sin recortar)
 todo sync ["mensaje"]                  git add -A + commit + push
+todo restore [--yes]                   descarta los cambios sin commitear del vault
 todo help                              muestra esta ayuda
 ```
 
@@ -56,6 +57,13 @@ Atajos: `add` = `create`, `ls` = `list`, `rm` = `delete`.
 
 Los ids aceptan también búsqueda por texto parcial. Releé con `todo list`
 después de cada operación porque los números de línea pueden cambiar.
+
+### Restaurar cambios (`todo restore`)
+
+Si algo quedó a medio tocar en el vault (tareas sin commitear o editadas por
+error), `todo restore` descarta **todos los cambios sin commitear** del repo
+(`git reset --hard HEAD`). Pide confirmación; se saltea con `--yes`. Los
+archivos sin trackear no se tocan.
 
 ### Zoom: ver el detalle completo de una tarea
 

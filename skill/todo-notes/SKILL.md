@@ -41,6 +41,7 @@ directorio del proyecto (donde esta `todo.py`).
 | `todo delete <id o texto>` | elimina la linea |
 | `todo zoom <id> [mas ids...]` | muestra el detalle completo de la tarea (sin recortar) |
 | `todo sync ["mensaje"]` | `git add -A` + commit + push del repo completo |
+| `todo restore [--yes]` | descarta los cambios sin commitear del vault (`git reset --hard`) |
 | `todo config list\|get\|set` | preferencias (ej. `active_prittier` para colores) |
 | `todo help` | ayuda |
 

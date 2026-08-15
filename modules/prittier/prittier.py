@@ -2,7 +2,17 @@ import os
 import shutil
 import sys
 
-from modules.utils.todo import filter_task, mode_from_args, split_priority, todo_items
+from modules.utils.todo import (
+    UNKNOWN_SEGMENT,
+    filter_task,
+    mode_from_args,
+    parse_segments,
+    read_lines,
+    segment_title,
+    split_priority,
+    todo_items,
+    todo_path,
+)
 
 RESET = "\033[0m"
 BOLD = "\033[1m"
@@ -106,8 +116,24 @@ def pretty_print_list(args):
         return
     text_width = _text_width(items)
     _print_header(text_width)
-    for it in items:
-        print(f" {_cell_state(it)}  {_cell_id(it)}  {_cell_text(it, text_width)}")
+    segments = parse_segments(read_lines(todo_path()))
+    for seg in segments:
+        seg_items = [it for it in items if it["id"] in seg["task_idx"]]
+        if not seg_items:
+            continue
+        if seg["date"] and seg["date"].strip() != UNKNOWN_SEGMENT:
+            title = segment_title(seg["date"])
+            total = text_width + 15
+            dashes = max(0, total - len(title))
+            left = dashes // 2
+            right = dashes - left
+            print(
+                f"{DIM}{'-' * left}{RESET}"
+                f"{BOLD}{CYAN}{title}{RESET}"
+                f"{DIM}{'-' * right}{RESET}"
+            )
+        for it in seg_items:
+            print(f" {_cell_state(it)}  {_cell_id(it)}  {_cell_text(it, text_width)}")
     _summary(all_items)
     
 def pretty_zoom_tasks(args):
