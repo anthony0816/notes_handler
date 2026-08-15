@@ -18,6 +18,7 @@ PRIORITY_LABELS = {
     "hight": "max",
 }
 DATE_RE = re.compile(r"^##\s*(\d{4})/(\d{1,2})/(\d{1,2})\s*$")
+DATE_RE_DMY = re.compile(r"^##\s*(\d{1,2})/(\d{1,2})/(\d{4})\s*$")
 SEPARATOR = "---"
 UNKNOWN_SEGMENT = "## Unknown Date"
 ENV = load_env()
@@ -108,20 +109,31 @@ def today_segment():
 
 
 def segment_title(line):
-    m = DATE_RE.match(line)
-    if not m:
+    parts = segment_date(line)
+    if not parts:
         return None
-    y, mo, d = (int(x) for x in m.groups())
+    y, mo, d = parts
     return f"{y}/{mo}/{d}"
 
 
 def segment_date(line):
     m = DATE_RE.match(line)
-    return tuple(int(x) for x in m.groups()) if m else None
+    if m:
+        y, mo, d = (int(x) for x in m.groups())
+    else:
+        m = DATE_RE_DMY.match(line)
+        if not m:
+            return None
+        d, mo, y = (int(x) for x in m.groups())
+    try:
+        datetime.date(y, mo, d)
+    except ValueError:
+        return None
+    return (y, mo, d)
 
 
 def is_segment_header(line):
-    return DATE_RE.match(line) is not None
+    return segment_date(line) is not None
 
 
 def is_today_segment(line):
