@@ -212,8 +212,12 @@ def cmd_zoom(args):
     if not args:
         sys.exit('error: todo zoom <id1> <id2> ...')
     lines = read_lines(todo_path())
-    for  arg in args :
-        arg = int(arg)
+    for arg in args:
+        try:
+            arg = int(arg)
+        except ValueError:
+            print(f'{arg} - no encontrado')
+            continue
         if arg < 1 or arg > len(lines):
             print(f'{arg} - no encontrado')
             continue

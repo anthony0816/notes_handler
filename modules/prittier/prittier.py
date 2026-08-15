@@ -139,13 +139,16 @@ def pretty_print_list(args):
 def pretty_zoom_tasks(args):
     if not args:
         sys.exit('error: todo zoom <id1> <id2> ...')
-    all_items =  todo_items()
-    for  arg in args :
-        arg = int(arg)
-        if arg < 1 or arg > len(all_items):
+    all_items = todo_items()
+    for arg in args:
+        try:
+            arg = int(arg)
+        except ValueError:
             print(f'{arg} - no encontrado')
             continue
-        item =  all_items[arg - 1]
-        
+        item = next((it for it in all_items if it["id"] == arg), None)
+        if item is None:
+            print(f'{arg} - no encontrado')
+            continue
         print(f" {_cell_state(item)}  {_cell_id(item)}  {_cell_text(item, _text_width([item], full=True))}")
     
