@@ -241,13 +241,21 @@ USO:
   todo zoom <id1> <id2> ...              muestra el detalle completo (sin recortar)
   todo sync ["mensaje"]                  git add -A + commit + push
   todo restore [--yes]                   descarta los cambios sin commitear del vault
-  todo sub create <nombre>               crea un subtodo (.md aparte, junto al principal)
-  todo sub list                          lista los subtodos
-  todo sub delete <nombre>               elimina un subtodo
-  todo sub edit <nombre> <nuevo nombre>  renombra un subtodo
+  todo check <nombre|main>               fija el contexto: las operaciones de tareas
+                                         apuntan a ese subtodo (main = el principal)
+  todo sub [create|list|delete|edit]     CRUD de subtodos (.md en subTodo/); sin
+                                         argumentos lista (sub list marca con [x]
+                                         el activo o main)
   todo help                              este texto
 
 ATAJOS: add == create, rm == delete, ls == list, sub rm == sub delete.
+
+CONTEXTO (check):
+  - todo check musica -> create/list/edit/done/undo/delete/zoom operan sobre
+    subTodo/musica.md hasta que se cambie; todo check main vuelve al principal.
+  - todo check (sin argumentos) muestra en donde estas parado.
+  - El contexto se persiste en config.json (current_sub), no en el vault.
+  - sub list marca con [x] el contexto activo (main si no hay ninguno).
 
 PRIORIDADES (create -p / edit p):
   - l / low -> (low) ; m / mid / middle -> (mid) ; max / hight -> (max)
@@ -263,5 +271,9 @@ DETALLES:
   - restore: git reset --hard HEAD en el vault (pide confirmacion; --yes la saltea).
   - sub: los subtodos son .md dentro de subTodo/ (carpeta junto al
     TODO.md principal); el gestor sub NO toca el principal.
+  - Al crear el primer bloque de un archivo vacio se encabeza con un H1
+    con el nombre del archivo/subtodo (sin guiones al inicio).
+  - restore NO borra archivos nunca commiteados: hace todo sync primero
+    para que los subtodos queden trackeados.
   - Config: .env junto al script (NOTES_ROOT, NOTES_TODO opcional).
 """

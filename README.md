@@ -50,10 +50,9 @@ todo delete <id|texto> [otras...]      elimina la línea
 todo zoom <id> [más ids...]            muestra la tarea con su detalle completo (sin recortar)
 todo sync ["mensaje"]                  git add -A + commit + push
 todo restore [--yes]                   descarta los cambios sin commitear del vault
-todo sub create <nombre>               crea un subtodo (.md aparte, junto al principal)
-todo sub list                          lista los subtodos
-todo sub delete <nombre>               elimina un subtodo
-todo sub edit <nombre> <nuevo nombre>  renombra un subtodo
+todo check <nombre|main>               fija el contexto: las operaciones de tareas
+                                       apuntan a ese subtodo (main = el principal)
+todo sub [create|list|delete|edit]     CRUD de subtodos; sin argumentos lista
 todo help                              muestra esta ayuda
 ```
 
@@ -70,22 +69,50 @@ una carpeta `subTodo/` en el **mismo directorio que el TODO.md principal**
 (`todo sub create musica`) sin tocar el archivo principal:
 
 ```console
-todo sub create musica            crea musica.md
-todo sub list                     lista los subtodos existentes
+todo sub create musica              crea musica.md
+todo sub                            lista los subtodos (o `todo sub list`)
 todo sub edit musica "musica 2026"  renombra el archivo
-todo sub delete musica            lo elimina
+todo sub delete musica              lo elimina
+```
+
+`todo sub list` marca con `[x]` el contexto activo (`main` si no hay ninguno):
+
+```console
+[ ] main
+[x] musica
+[ ] lectura
 ```
 
 El gestor `sub` **nunca toca el TODO.md principal**; solo crea/lista/
 renombra/borra sus propios `.md` dentro de `subTodo/`. Los nombres no admiten
 `/`, `\` ni `:`.
 
+### Pararse en un subtodo (`todo check`)
+
+`todo check <nombre>` fija un contexto: desde ese momento, todos los comandos
+de tareas (`create`, `list`, `done`, `undo`, `edit`, `delete`, `zoom`) operan
+sobre ese subtodo, sin escribir flags en cada comando:
+
+```console
+todo check musica        me paro en musica (ya debe existir)
+todo create "comprar vinilos"     -> va a subTodo/musica.md
+todo list                -> lista musica.md
+todo check main          vuelvo al TODO.md principal
+todo check               muestra en dónde estoy parado (main o el subtodo)
+```
+
+El contexto se persiste en `config.json` (clave `current_sub`), no en el
+vault, y al crear el primer bloque de un archivo vacío se encabeza con un H1
+con el nombre del archivo (ej. `# musica`).
+
 ### Restaurar cambios (`todo restore`)
 
 Si algo quedó a medio tocar en el vault (tareas sin commitear o editadas por
 error), `todo restore` descarta **todos los cambios sin commitear** del repo
 (`git reset --hard HEAD`). Pide confirmación; se saltea con `--yes`. Los
-archivos sin trackear no se tocan.
+archivos **sin trackear no se tocan**: para que un subtodo nuevo entre bajo
+control de git, hacé `todo sync` (que hace `git add -A`) antes de depender de
+`restore` para revertirlo.
 
 ### Zoom: ver el detalle completo de una tarea
 
