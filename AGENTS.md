@@ -31,6 +31,7 @@ solo contiene la herramienta.
 | `modules/config/config.py` | Preferencias activables/desactivables (`config.json`, gitignored): schema, `load`, `get`, `set_value`, `cmd_config`. |
 | `modules/prittier/prittier.py` | Listado con colores (`pretty_print_list`) + soporte ANSI en Windows. |
 | `modules/git/git.py` | Operaciones git (`cmd_sync`). |
+| `modules/subTodo/subTodo.py` | `SubTodoService`: gestiona subtodos en `subTodo/` (junto al TODO.md) con `todo sub create/list/delete/edit`; NO toca el principal. |
 | `todo.cmd` / `todo.sh` | Wrappers Windows/bash que llaman a `todo_main.py`. |
 | `skill/todo-notes/SKILL.md` | Skill de opencode que viaja en el repo; copiar a `~/.config/opencode/skills/` para activarla. |
 | `.env.example` | Plantilla de config del vault (`.env` real no se versiona). |

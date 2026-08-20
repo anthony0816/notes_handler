@@ -50,13 +50,35 @@ todo delete <id|texto> [otras...]      elimina la línea
 todo zoom <id> [más ids...]            muestra la tarea con su detalle completo (sin recortar)
 todo sync ["mensaje"]                  git add -A + commit + push
 todo restore [--yes]                   descarta los cambios sin commitear del vault
+todo sub create <nombre>               crea un subtodo (.md aparte, junto al principal)
+todo sub list                          lista los subtodos
+todo sub delete <nombre>               elimina un subtodo
+todo sub edit <nombre> <nuevo nombre>  renombra un subtodo
 todo help                              muestra esta ayuda
 ```
 
-Atajos: `add` = `create`, `ls` = `list`, `rm` = `delete`.
+Atajos: `add` = `create`, `ls` = `list`, `rm` = `delete` (también en `todo sub`).
 
 Los ids aceptan también búsqueda por texto parcial. Releé con `todo list`
 después de cada operación porque los números de línea pueden cambiar.
+
+### Subtodos (`todo sub`)
+
+Un subtodo es simplemente un `.md` (con el nombre que se decida) que vive en
+una carpeta `subTodo/` en el **mismo directorio que el TODO.md principal**
+(ej. `Todo/SubTodo/musica.md` en el vault). Sirve para llevar listas paralelas
+(`todo sub create musica`) sin tocar el archivo principal:
+
+```console
+todo sub create musica            crea musica.md
+todo sub list                     lista los subtodos existentes
+todo sub edit musica "musica 2026"  renombra el archivo
+todo sub delete musica            lo elimina
+```
+
+El gestor `sub` **nunca toca el TODO.md principal**; solo crea/lista/
+renombra/borra sus propios `.md` dentro de `subTodo/`. Los nombres no admiten
+`/`, `\` ni `:`.
 
 ### Restaurar cambios (`todo restore`)
 

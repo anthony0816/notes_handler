@@ -4,6 +4,7 @@ import sys
 
 from modules.utils.todo import (
     UNKNOWN_SEGMENT,
+    current_path,
     filter_task,
     mode_from_args,
     parse_segments,
@@ -11,7 +12,6 @@ from modules.utils.todo import (
     segment_title,
     split_priority,
     todo_items,
-    todo_path,
 )
 
 RESET = "\033[0m"
@@ -130,14 +130,14 @@ def _summary(all_items):
 def pretty_print_list(args):
     enable_ansi()
     mode = mode_from_args(args)
-    all_items = todo_items()
+    all_items = todo_items(current_path())
     items = [it for it in all_items if filter_task(it["done"], mode)]
     if not items:
         print(f"{DIM}(sin tareas {MODE_LABEL[mode]}){RESET}")
         return
     text_width = _text_width(items)
     _print_header(text_width)
-    segments = parse_segments(read_lines(todo_path()))
+    segments = parse_segments(read_lines(current_path()))
     for seg in segments:
         seg_items = [it for it in items if it["id"] in seg["task_idx"]]
         if not seg_items:
@@ -160,7 +160,7 @@ def pretty_print_list(args):
 def pretty_zoom_tasks(args):
     if not args:
         sys.exit('error: todo zoom <id1> <id2> ...')
-    all_items = todo_items()
+    all_items = todo_items(current_path())
     for arg in args:
         try:
             arg = int(arg)

@@ -42,6 +42,10 @@ directorio del proyecto (donde esta `todo.py`).
 | `todo zoom <id> [mas ids...]` | muestra el detalle completo de la tarea (sin recortar) |
 | `todo sync ["mensaje"]` | `git add -A` + commit + push del repo completo |
 | `todo restore [--yes]` | descarta los cambios sin commitear del vault (`git reset --hard`) |
+| `todo sub create <nombre>` | crea un subtodo (`.md` en `subTodo/`, junto al TODO.md, NO toca el principal) |
+| `todo sub list` | lista los subtodos existentes |
+| `todo sub delete <nombre>` | elimina un subtodo |
+| `todo sub edit <nombre> <nuevo>` | renombra un subtodo |
 | `todo config list\|get\|set` | preferencias (ej. `active_prittier` para colores) |
 | `todo help` | ayuda |
 

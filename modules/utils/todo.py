@@ -3,6 +3,7 @@ import re
 import sys
 from pathlib import Path
 
+from modules.config.config import get as config_get
 from modules.env.env import load_env
 
 DEFAULT_TODO_REL = "TODO/TODO.md"
@@ -40,6 +41,26 @@ def todo_path():
         rel = Path(raw)
         return rel if rel.is_absolute() else notes_root() / rel
     return notes_root() / DEFAULT_TODO_REL
+
+
+def sub_path(name):
+    if not name or any(c in name for c in "/\\:") or name in (".", ".."):
+        sys.exit(f"error: nombre invalido: {name}")
+    return todo_path().parent / "subTodo" / f"{name}.md"
+
+
+def current_sub():
+    return config_get("current_sub")
+
+
+def current_path():
+    name = current_sub()
+    if not name:
+        return todo_path()
+    path = sub_path(name)
+    if not path.exists():
+        sys.exit(f"error: no existe el subtodo: {name}")
+    return path
 
 
 def read_lines(path):
@@ -91,9 +112,9 @@ def mode_from_args(args):
     return "pending"
 
 
-def todo_items():
+def todo_items(path=None):
     items = []
-    for i, line in enumerate(read_lines(todo_path()), 1):
+    for i, line in enumerate(read_lines(path or todo_path()), 1):
         parsed = parse_task(line)
         if parsed:
             done, _, text = parsed

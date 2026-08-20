@@ -10,6 +10,11 @@ SCHEMA = {
         "type": "bool",
         "description": "Muestra el listado con colores (prittier).",
     },
+    "current_sub": {
+        "default": "",
+        "type": "string",
+        "description": "Subtodo activo para las operaciones de tareas (\"\" = TODO.md principal).",
+    },
 }
 
 

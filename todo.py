@@ -12,19 +12,19 @@ from modules.utils.todo import (
     SEPARATOR,
     TASK_RE,
     UNKNOWN_SEGMENT,
+    current_path,
     is_segment_header,
     is_today_segment,
     parse_task,
     read_lines,
     split_priority,
     today_segment,
-    todo_path,
     write_lines,
 )
 
 
 def cmd_list(args):
-    lines = read_lines(todo_path())
+    lines = read_lines(current_path())
     mode = "pending"
     if "--all" in args or "-a" in args:
         mode = "all"
@@ -105,7 +105,7 @@ def cmd_create(args):
         priority = priority_dic.get(args[1].lower())
     
     task = f"- [ ] ({priority}) {title}" + (f": {desc}" if desc else "")
-    path = todo_path()
+    path = current_path()
     lines = read_lines(path)
     today = today_segment()
     header = None
@@ -114,6 +114,7 @@ def cmd_create(args):
             header = i
     if header is None:
         has_segments = any(is_segment_header(line) for line in lines)
+        first_block = not lines
         if not has_segments and lines:
             first_task = None
             for i, line in enumerate(lines, 1):
@@ -124,7 +125,11 @@ def cmd_create(args):
                 lines.insert(first_task - 1, UNKNOWN_SEGMENT)
         if lines and lines[-1].strip():
             lines.append("")
-        lines.append(SEPARATOR)
+        if first_block:
+            lines.append(f"# {path.stem}")
+            lines.append("")
+        else:
+            lines.append(SEPARATOR)
         lines.append(today)
         lines.append(task)
     else:
@@ -144,7 +149,7 @@ def cmd_create(args):
 def cmd_edit(args):
     if not args:
         sys.exit('error: usa `todo edit <id> ["p <prio>"] "nuevo texto"`')
-    path = todo_path()
+    path = current_path()
     lines = read_lines(path)
     targets, unknown = find_targets(lines, args[:1])
     if not targets:
@@ -178,7 +183,7 @@ def cmd_edit(args):
 
 
 def cmd_toggle(args, done):
-    path = todo_path()
+    path = current_path()
     lines = read_lines(path)
     targets, unknown = find_targets(lines, args)
     if not targets:
@@ -196,7 +201,7 @@ def cmd_toggle(args, done):
 
 
 def cmd_delete(args):
-    path = todo_path()
+    path = current_path()
     lines = read_lines(path)
     targets, unknown = find_targets(lines, args)
     if not targets:
@@ -211,7 +216,7 @@ def cmd_delete(args):
 def cmd_zoom(args):
     if not args:
         sys.exit('error: todo zoom <id1> <id2> ...')
-    lines = read_lines(todo_path())
+    lines = read_lines(current_path())
     for arg in args:
         try:
             arg = int(arg)
@@ -236,9 +241,13 @@ USO:
   todo zoom <id1> <id2> ...              muestra el detalle completo (sin recortar)
   todo sync ["mensaje"]                  git add -A + commit + push
   todo restore [--yes]                   descarta los cambios sin commitear del vault
+  todo sub create <nombre>               crea un subtodo (.md aparte, junto al principal)
+  todo sub list                          lista los subtodos
+  todo sub delete <nombre>               elimina un subtodo
+  todo sub edit <nombre> <nuevo nombre>  renombra un subtodo
   todo help                              este texto
 
-ATAJOS: add == create, rm == delete, ls == list.
+ATAJOS: add == create, rm == delete, ls == list, sub rm == sub delete.
 
 PRIORIDADES (create -p / edit p):
   - l / low -> (low) ; m / mid / middle -> (mid) ; max / hight -> (max)
@@ -252,5 +261,7 @@ DETALLES:
   - [x] = hecha. El id es el numero de linea (puede cambiar al editar).
   - Los ids aceptan tambien busqueda por texto parcial.
   - restore: git reset --hard HEAD en el vault (pide confirmacion; --yes la saltea).
+  - sub: los subtodos son .md dentro de subTodo/ (carpeta junto al
+    TODO.md principal); el gestor sub NO toca el principal.
   - Config: .env junto al script (NOTES_ROOT, NOTES_TODO opcional).
 """

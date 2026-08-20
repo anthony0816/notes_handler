@@ -2,6 +2,7 @@ import sys
 
 from todo import USAGE
 from todo_controller import TodoController
+from modules.subTodo.subTodo import SubTodoService
 
 
 def main(argv):
@@ -9,6 +10,7 @@ def main(argv):
         print(USAGE)
         return
     todo = TodoController()
+    subTodo = SubTodoService()
     cmd, args = argv[0].lower(), argv[1:]
     handlers = {
         "list": todo.list,
@@ -23,7 +25,9 @@ def main(argv):
         "sync": todo.sync,
         "restore": todo.restore,
         "config": todo.config,
-        "zoom" : todo.zoom
+        "zoom" : todo.zoom,
+        "sub": subTodo.sub,
+        "check": subTodo.check
     }
     handler = handlers.get(cmd)
     if handler:
