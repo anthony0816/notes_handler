@@ -241,7 +241,7 @@ USO:
   todo zoom <id1> <id2> ...              muestra el detalle completo (sin recortar)
   todo sync ["mensaje"]                  git add -A + commit + push
   todo restore [--yes]                   descarta los cambios sin commitear del vault
-  todo check <nombre|main>               fija el contexto: las operaciones de tareas
+  todo aim <nombre|main>                 fija el contexto: las operaciones de tareas
                                          apuntan a ese subtodo (main = el principal)
   todo sub [create|list|delete|edit]     CRUD de subtodos (.md en subTodo/); sin
                                          argumentos lista (sub list marca con [x]
@@ -250,10 +250,10 @@ USO:
 
 ATAJOS: add == create, rm == delete, ls == list, sub rm == sub delete.
 
-CONTEXTO (check):
-  - todo check musica -> create/list/edit/done/undo/delete/zoom operan sobre
-    subTodo/musica.md hasta que se cambie; todo check main vuelve al principal.
-  - todo check (sin argumentos) muestra en donde estas parado.
+CONTEXTO (aim):
+  - todo aim musica -> create/list/edit/done/undo/delete/zoom operan sobre
+    subTodo/musica.md hasta que se cambie; todo aim main vuelve al principal.
+  - todo aim (sin argumentos) muestra en donde estas parado.
   - El contexto se persiste en config.json (current_sub), no en el vault.
   - sub list marca con [x] el contexto activo (main si no hay ninguno).
 

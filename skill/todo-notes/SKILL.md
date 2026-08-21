@@ -42,7 +42,7 @@ directorio del proyecto (donde esta `todo.py`).
 | `todo zoom <id> [mas ids...]` | muestra el detalle completo de la tarea (sin recortar) |
 | `todo sync ["mensaje"]` | `git add -A` + commit + push del repo completo |
 | `todo restore [--yes]` | descarta los cambios sin commitear del vault (`git reset --hard`); no toca archivos sin trackear |
-| `todo check <nombre\|main>` | fija el contexto: las operaciones de tareas apuntan a ese subtodo (main = principal); sin argumentos muestra dónde estás |
+| `todo aim <nombre\|main>` | fija el contexto: las operaciones de tareas apuntan a ese subtodo (main = principal); sin argumentos muestra dónde estás |
 | `todo sub [create\|list\|delete\|edit]` | CRUD de subtodos (`.md` en `subTodo/`, junto al TODO.md, NO toca el principal); sin argumentos lista, marcando con `[x]` el contexto activo o `main` |
 | `todo config list\|get\|set` | preferencias (ej. `active_prittier` para colores, `current_sub` para el contexto) |
 | `todo help` | ayuda |
@@ -61,7 +61,7 @@ pueden cambiar: releer con `todo list` antes de operar.
 
 El contexto (`current_sub`) se persiste en `config.json`. Si el usuario crea
 tareas en un subtodo, `todo list` sin más ya las muestra: conviene revisar
-`todo check` y `todo sub` para saber dónde está parado antes de operar. Los
+`todo aim` y `todo sub` para saber dónde está parado antes de operar. Los
 subtodos nuevos no están trackeados por git hasta el próximo `todo sync`.
 
 ## Instalación de la skill

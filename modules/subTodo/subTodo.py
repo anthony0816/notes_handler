@@ -21,7 +21,7 @@ class SubTodoService:
         else:
             sys.exit(f"error: subcomando sub desconocido: {action}")
 
-    def check(self, args):
+    def aim(self, args):
         if not args:
             name = current_sub()
             print(name if name else "main")

@@ -27,7 +27,7 @@ def main(argv):
         "config": todo.config,
         "zoom" : todo.zoom,
         "sub": subTodo.sub,
-        "check": subTodo.check
+        "aim": subTodo.aim
     }
     handler = handlers.get(cmd)
     if handler:

@@ -50,7 +50,7 @@ todo delete <id|texto> [otras...]      elimina la línea
 todo zoom <id> [más ids...]            muestra la tarea con su detalle completo (sin recortar)
 todo sync ["mensaje"]                  git add -A + commit + push
 todo restore [--yes]                   descarta los cambios sin commitear del vault
-todo check <nombre|main>               fija el contexto: las operaciones de tareas
+todo aim <nombre|main>                 fija el contexto: las operaciones de tareas
                                        apuntan a ese subtodo (main = el principal)
 todo sub [create|list|delete|edit]     CRUD de subtodos; sin argumentos lista
 todo help                              muestra esta ayuda
@@ -87,18 +87,18 @@ El gestor `sub` **nunca toca el TODO.md principal**; solo crea/lista/
 renombra/borra sus propios `.md` dentro de `subTodo/`. Los nombres no admiten
 `/`, `\` ni `:`.
 
-### Pararse en un subtodo (`todo check`)
+### Pararse en un subtodo (`todo aim`)
 
-`todo check <nombre>` fija un contexto: desde ese momento, todos los comandos
+`todo aim <nombre>` fija un contexto: desde ese momento, todos los comandos
 de tareas (`create`, `list`, `done`, `undo`, `edit`, `delete`, `zoom`) operan
 sobre ese subtodo, sin escribir flags en cada comando:
 
 ```console
-todo check musica        me paro en musica (ya debe existir)
+todo aim musica          me paro en musica (ya debe existir)
 todo create "comprar vinilos"     -> va a subTodo/musica.md
 todo list                -> lista musica.md
-todo check main          vuelvo al TODO.md principal
-todo check               muestra en dónde estoy parado (main o el subtodo)
+todo aim main            vuelvo al TODO.md principal
+todo aim                 muestra en dónde estoy parado (main o el subtodo)
 ```
 
 El contexto se persiste en `config.json` (clave `current_sub`), no en el

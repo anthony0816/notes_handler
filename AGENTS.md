@@ -31,7 +31,7 @@ solo contiene la herramienta.
 | `modules/config/config.py` | Preferencias activables/desactivables (`config.json`, gitignored): schema (`active_prittier`, `current_sub`), `load`, `get`, `set_value`, `cmd_config`. |
 | `modules/prittier/prittier.py` | Listado con colores (`pretty_print_list`) + soporte ANSI en Windows. |
 | `modules/git/git.py` | Operaciones git (`cmd_sync`, `cmd_restore`). |
-| `modules/subTodo/subTodo.py` | `SubTodoService`: gestiona subtodos en `subTodo/` (junto al TODO.md) con `todo sub create/list/delete/edit` y el contexto con `todo check`; NO toca el principal. `todo sub` sin argumentos lista (marca con `[x]` el activo o `main`). |
+| `modules/subTodo/subTodo.py` | `SubTodoService`: gestiona subtodos en `subTodo/` (junto al TODO.md) con `todo sub create/list/delete/edit` y el contexto con `todo aim`; NO toca el principal. `todo sub` sin argumentos lista (marca con `[x]` el activo o `main`). |
 | `todo.cmd` / `todo.sh` | Wrappers Windows/bash que llaman a `todo_main.py`. |
 | `skill/todo-notes/SKILL.md` | Skill de opencode que viaja en el repo; copiar a `~/.config/opencode/skills/` para activarla. |
 | `.env.example` | Plantilla de config del vault (`.env` real no se versiona). |
@@ -52,7 +52,7 @@ solo contiene la herramienta.
 ## Convenciones
 
 - Las rutas se resuelven SIEMPRE via `notes_root()` / `todo_path()` /
-  `current_path()` (que respeta el contexto `check`) de `modules.utils.todo`,
+  `current_path()` (que respeta el contexto `aim`) de `modules.utils.todo`,
   nunca hardcodeadas.
 - `ENV` se carga una vez en `modules/utils/todo.py` al importar; no recargar
   `.env` en otros módulos.
