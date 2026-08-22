@@ -58,8 +58,10 @@ solo contiene la herramienta.
   `.env` en otros módulos.
 - Los archivos de tareas se leen/escriben con `read_lines` / `write_lines`
   (siempre UTF-8, normalizan con `\n` final).
-- Los ids de tareas son números de línea; si una operación agrega/borra
-  líneas, los ids posteriores cambian (así está documentado, no "arreglarlo").
+- Los ids de tareas son ordinales (1, 2, 3…): solo cuentan las líneas
+  `- [ ]`/`- [x]`; los encabezados `#`/`##`, `---` y líneas en blanco no
+  computan. Si una operación agrega/borra tareas, los ids posteriores
+  cambian (así está documentado, no "arreglarlo").
 
 ## Verificación
 

@@ -112,13 +112,20 @@ def mode_from_args(args):
     return "pending"
 
 
+def task_line_numbers(lines):
+    return [i for i, line in enumerate(lines, 1) if parse_task(line)]
+
+
+def line_to_id(lines):
+    return {line_no: n for n, line_no in enumerate(task_line_numbers(lines), 1)}
+
+
 def todo_items(path=None):
+    lines = read_lines(path or todo_path())
     items = []
-    for i, line in enumerate(read_lines(path or todo_path()), 1):
-        parsed = parse_task(line)
-        if parsed:
-            done, _, text = parsed
-            items.append({"id": i, "done": done, "line": line, "text": text})
+    for n, i in enumerate(task_line_numbers(lines), 1):
+        done, _, text = parse_task(lines[i - 1])
+        items.append({"id": n, "num": i, "done": done, "line": lines[i - 1], "text": text})
     return items
 
 

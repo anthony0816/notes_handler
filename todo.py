@@ -18,6 +18,8 @@ from modules.utils.todo import (
     parse_task,
     read_lines,
     split_priority,
+    line_to_id,
+    task_line_numbers,
     today_segment,
     write_lines,
 )
@@ -31,7 +33,8 @@ def cmd_list(args):
     elif "--done" in args or "-d" in args:
         mode = "done"
     shown = False
-    for i, line in enumerate(lines, 1):
+    n = 0
+    for line in lines:
         if (
             is_segment_header(line)
             or line.strip() == SEPARATOR
@@ -43,9 +46,10 @@ def cmd_list(args):
         parsed = parse_task(line)
         if not parsed:
             continue
+        n += 1
         done, _, text = parsed
         if show_filter(done, mode):
-            print(f"{i:4}  {line}")
+            print(f"{n:4}  {line}")
             shown = True
     if not shown:
         print("(sin tareas)")
@@ -60,13 +64,14 @@ def show_filter(done, mode):
 
 
 def find_targets(lines, args):
+    ids = task_line_numbers(lines)
     targets = []
     unknown = []
     for arg in args:
         if arg.isdigit():
             n = int(arg)
-            if 1 <= n <= len(lines):
-                targets.append(n)
+            if 1 <= n <= len(ids):
+                targets.append(ids[n - 1])
             else:
                 unknown.append(f"id {n}")
         else:
@@ -132,6 +137,7 @@ def cmd_create(args):
             lines.append(SEPARATOR)
         lines.append(today)
         lines.append(task)
+        pos = len(lines)
     else:
         last_task = None
         for i in range(header + 1, len(lines) + 1):
@@ -142,8 +148,10 @@ def cmd_create(args):
         if last_task is None:
             last_task = header
         lines.insert(last_task, task)
+        pos = last_task + 1
     write_lines(path, lines)
-    print(f"creada [{len(lines)}]: {task}")
+    new_id = sum(1 for l in lines[:pos] if parse_task(l))
+    print(f"creada [{new_id}]: {task}")
 
 
 def cmd_edit(args):
@@ -168,6 +176,7 @@ def cmd_edit(args):
     if priority is None and not new_text:
         sys.exit("error: falta el nuevo texto")
     i = targets[0]
+    n = line_to_id(lines)[i]
     m = TASK_RE.match(lines[i - 1])
     existing, body = split_priority(m.group(3))
     if priority is not None:
@@ -177,7 +186,7 @@ def cmd_edit(args):
         new_body = f"({existing}) {new_text}" if existing else new_text
     lines[i - 1] = f"{m.group(1)}- [{m.group(2)}] {new_body}"
     write_lines(path, lines)
-    print(f"editada [{i}]: {lines[i - 1]}")
+    print(f"editada [{n}]: {lines[i - 1]}")
     if unknown:
         print(f"sin coincidencias: {', '.join(unknown)}", file=sys.stderr)
 
@@ -189,13 +198,14 @@ def cmd_toggle(args, done):
     if not targets:
         sys.exit("no se encontro la tarea")
     mark = "x" if done else " "
+    ids = line_to_id(lines)
     for i in targets:
         m = TASK_RE.match(lines[i - 1])
         lines[i - 1] = f"{m.group(1)}- [{mark}]{m.group(3)}"
     write_lines(path, lines)
     for i in targets:
         verb = "hecha" if done else "reabierta"
-        print(f"{verb} [{i}]: {lines[i - 1]}")
+        print(f"{verb} [{ids[i]}]: {lines[i - 1]}")
     if unknown:
         print(f"sin coincidencias: {', '.join(unknown)}", file=sys.stderr)
 
@@ -206,8 +216,9 @@ def cmd_delete(args):
     targets, unknown = find_targets(lines, args)
     if not targets:
         sys.exit("no se encontro la tarea")
+    ids = line_to_id(lines)
     for i in sorted(targets, reverse=True):
-        print(f"eliminada [{i}]: {lines[i - 1]}")
+        print(f"eliminada [{ids[i]}]: {lines[i - 1]}")
         del lines[i - 1]
     write_lines(path, lines)
     if unknown:
@@ -217,16 +228,17 @@ def cmd_zoom(args):
     if not args:
         sys.exit('error: todo zoom <id1> <id2> ...')
     lines = read_lines(current_path())
+    ids = task_line_numbers(lines)
     for arg in args:
         try:
             arg = int(arg)
         except ValueError:
             print(f'{arg} - no encontrado')
             continue
-        if arg < 1 or arg > len(lines):
+        if arg < 1 or arg > len(ids):
             print(f'{arg} - no encontrado')
             continue
-        print(lines[arg - 1])
+        print(lines[ids[arg - 1] - 1])
 
 
 USAGE = """todo - gestion de tareas TODO (Obsidian + git)

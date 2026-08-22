@@ -139,7 +139,7 @@ def pretty_print_list(args):
     _print_header(text_width)
     segments = parse_segments(read_lines(current_path()))
     for seg in segments:
-        seg_items = [it for it in items if it["id"] in seg["task_idx"]]
+        seg_items = [it for it in items if it["num"] in seg["task_idx"]]
         if not seg_items:
             continue
         if seg["date"] and seg["date"].strip() != UNKNOWN_SEGMENT:
