@@ -75,12 +75,8 @@ def find_targets(lines, args):
             else:
                 unknown.append(f"id {n}")
         else:
-            matches = [i for i, l in enumerate(lines, 1) if arg.lower() in l.lower()]
-            if matches:
-                targets.extend(matches)
-            else:
-                unknown.append(f"'{arg}'")
-    targets = sorted(set(t for t in targets if parse_task(lines[t - 1])))
+            unknown.append(f"'{arg}'")
+    targets = sorted(set(targets))
     return targets, unknown
 
 
@@ -247,9 +243,9 @@ USO:
   todo create [-p low|mid|max] "Titulo" ["descripcion"]   crea tarea (prioridad default: low)
   todo list [--all|--done|--pending]     lista (default: pendientes)
   todo edit <id> ["p <prio>"] ["texto"]  edita texto (conserva prioridad); con `p` cambia prioridad
-  todo done <id|texto> [otras...]        marca como hecha
-  todo undo <id|texto> [otras...]        vuelve a abrir
-  todo delete <id|texto> [otras...]      elimina linea(s)
+  todo done <id> [otros...]              marca como hecha
+  todo undo <id> [otros...]              vuelve a abrir
+  todo delete <id> [otros...]            elimina linea(s)
   todo zoom <id1> <id2> ...              muestra el detalle completo (sin recortar)
   todo sync ["mensaje"]                  git add -A + commit + push
   todo restore [--yes]                   descarta los cambios sin commitear del vault
@@ -278,8 +274,9 @@ PRIORIDADES (create -p / edit p):
 
 DETALLES:
   - Cada tarea es una linea: - [ ] Titulo: descripcion
-  - [x] = hecha. El id es el numero de linea (puede cambiar al editar).
-  - Los ids aceptan tambien busqueda por texto parcial.
+  - [x] = hecha. El id es el ordinal de la tarea (1, 2, 3...; los
+    encabezados #/## y --- no cuentan; puede cambiar al agregar/borrar).
+  - done/undo/delete/edit aceptan SOLO ids numericos, nunca texto.
   - restore: git reset --hard HEAD en el vault (pide confirmacion; --yes la saltea).
   - sub: los subtodos son .md dentro de subTodo/ (carpeta junto al
     TODO.md principal); el gestor sub NO toca el principal.

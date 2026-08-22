@@ -23,7 +23,9 @@ Cada tarea es UNA linea de markdown:
 
 - `- [ ]` = pendiente, `- [x]` = hecha.
 - Título obligatorio; descripción opcional separada con `: `.
-- El ID de una tarea es su numero de linea en el archivo (1-indexado).
+- El ID es el ordinal de la tarea (1, 2, 3...): solo cuentan las lineas
+  `- [ ]`/`- [x]`; los encabezados `#`/`##`, `---` y lineas en blanco no
+  computan.
 - No inventar otros formatos; respetar las lineas existentes.
 
 ## Comandos
@@ -33,12 +35,12 @@ directorio del proyecto (donde esta `todo.py`).
 
 | Comando | Efecto |
 | --- | --- |
-| `todo create [-p low\|mid\|max] "Titulo" ["desc"]` | crea tarea al final del archivo con prioridad (default `low`) |
+| `todo create [-p low\|mid\|max] "Titulo" ["desc"]` | crea tarea en el bloque del dia de hoy (lo crea si no existe) con prioridad (default `low`) |
 | `todo list [--all\|--done\|--pending]` | lista tareas (default: pendientes) con su id |
 | `todo edit <id> ["p <prio>"] ["texto"]` | edita texto (conserva prioridad); con `p` cambia la prioridad |
-| `todo done <id o texto>` | marca como hecha (`- [x]`) |
-| `todo undo <id o texto>` | vuelve a abrir (`- [ ]`) |
-| `todo delete <id o texto>` | elimina la linea |
+| `todo done <id>` | marca como hecha (`- [x]`) |
+| `todo undo <id>` | vuelve a abrir (`- [ ]`) |
+| `todo delete <id>` | elimina la linea |
 | `todo zoom <id> [mas ids...]` | muestra el detalle completo de la tarea (sin recortar) |
 | `todo sync ["mensaje"]` | `git add -A` + commit + push del repo completo |
 | `todo restore [--yes]` | descarta los cambios sin commitear del vault (`git reset --hard`); no toca archivos sin trackear |
@@ -55,9 +57,11 @@ Prioridades: `-p`/`p` acepta `low, l`, `m, mid, middle`, `max, hight` (tag
 `todo list` delega en el módulo `prittier` (colores) si la config
 `active_prittier` está activa; si no, usa el listado plano.
 
-Los argumentos de `done`/`undo`/`delete` aceptan ids numericos o texto parcial
-a buscar. Se pueden pasar varios a la vez. Despues de cada operacion los ids
-pueden cambiar: releer con `todo list` antes de operar.
+Los argumentos de `done`/`undo`/`delete`/`edit` aceptan SOLO ids numericos,
+nunca texto parcial (evita alterar tareas por substring). Se pueden pasar
+varios ids a la vez. El id es el ordinal de la tarea (1, 2, 3...; los
+encabezados #/## y --- no cuentan). Despues de cada operacion los ids pueden
+cambiar: releer con `todo list` antes de operar.
 
 El contexto (`current_sub`) se persiste en `config.json`. Si el usuario crea
 tareas en un subtodo, `todo list` sin más ya las muestra: conviene revisar

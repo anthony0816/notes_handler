@@ -44,9 +44,9 @@ Opcionalmente `NOTES_TODO` (por defecto `TODO/TODO.md`, relativo al vault).
 todo create [-p <prioridad>] "Título" ["descripción"]   crea una tarea
 todo list [--all|--done|--pending]     lista tareas (default: pendientes)
 todo edit <id> <"p <prioridad>"> ["nuevo título"]   edita texto/prioridad
-todo done <id|texto> [otras...]        marca como hecha (- [x])
-todo undo <id|texto> [otras...]        vuelve a abrir (- [ ])
-todo delete <id|texto> [otras...]      elimina la línea
+todo done <id> [otros...]              marca como hecha (- [x])
+todo undo <id> [otros...]              vuelve a abrir (- [ ])
+todo delete <id> [otros...]            elimina la línea
 todo zoom <id> [más ids...]            muestra la tarea con su detalle completo (sin recortar)
 todo sync ["mensaje"]                  git add -A + commit + push
 todo restore [--yes]                   descarta los cambios sin commitear del vault
@@ -58,8 +58,10 @@ todo help                              muestra esta ayuda
 
 Atajos: `add` = `create`, `ls` = `list`, `rm` = `delete` (también en `todo sub`).
 
-Los ids aceptan también búsqueda por texto parcial. Releé con `todo list`
-después de cada operación porque los números de línea pueden cambiar.
+`done`/`undo`/`delete`/`edit` aceptan SOLO ids numéricos, nunca texto (evita
+borrados accidentales por substring). El id es el ordinal de la tarea
+(1, 2, 3…; los encabezados `#`/`##` y `---` no cuentan). Releé con `todo list`
+después de cada operación porque los ids pueden cambiar.
 
 ### Subtodos (`todo sub`)
 
