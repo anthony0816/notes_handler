@@ -9,6 +9,12 @@ from modules.env.env import load_env
 DEFAULT_TODO_REL = "TODO/TODO.md"
 TASK_RE = re.compile(r"^(\s*)- \[([ xX])\](.*)$")
 PRIORITY_RE = re.compile(r"^\(\s*(low|mid|max)\s*\)\s*(.*)$", re.IGNORECASE)
+
+TIME_RE = re.compile(
+    r'^(\d{1,2}:\d{2}\s*(?:AM|PM))\s*(.*)$',
+    re.IGNORECASE
+)
+
 PRIORITY_LABELS = {
     "l": "low",
     "low": "low",
@@ -95,6 +101,16 @@ def split_priority(text):
         return m.group(1).lower(), m.group(2).strip()
     return None, text.strip()
 
+def split_time(text):
+    m = TIME_RE.match(text)
+    if m:
+        return m.group(1), m.group(2).strip()
+    return None, text
+
+def split_task_meta(text):
+    time_str, rest = split_time(text)
+    priority, body = split_priority(rest)
+    return time_str, priority, body
 
 def filter_task(done, mode):
     if mode == "all":
@@ -135,6 +151,17 @@ def today_segment():
     d = datetime.date.today()
     return f"## {d.year}/{d.month}/{d.day}"
 
+def today_time():
+    time = datetime.datetime.now().strftime("%H:%M")
+    meridium = 'AM'
+    h = int( time.split(':')[0])
+    min = time.split(':')[1]
+    if h >= 12 :
+        h = h - 12
+        meridium = 'PM'
+    if h == 0 :
+        h = 12
+    return f'{h}:{min} {meridium}'
 
 def segment_title(line):
     parts = segment_date(line)

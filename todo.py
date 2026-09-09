@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Gestiona el vault TODO (Obsidian + git) del usuario.
 
-Tareas: lineas "- [ ] Titulo: descripcion" en TODO.md.
-- [ ] = pendiente, - [x] = hecha. El id de cada tarea es su numero de linea.
+Tareas: lineas "- [ ] H:MM AM/PM (prioridad) Titulo: descripcion" en TODO.md.
+- [ ] = pendiente, - [x] = hecha. El id es el ordinal de la tarea.
 """
 
 import sys
@@ -17,10 +17,11 @@ from modules.utils.todo import (
     is_today_segment,
     parse_task,
     read_lines,
-    split_priority,
+    split_task_meta,
     line_to_id,
     task_line_numbers,
     today_segment,
+    today_time,
     write_lines,
 )
 
@@ -105,10 +106,11 @@ def cmd_create(args):
         desc = " ".join(args[3:])
         priority = priority_dic.get(args[1].lower())
     
-    task = f"- [ ] ({priority}) {title}" + (f": {desc}" if desc else "")
+    time = today_time()
+    task = f"- [ ] {time} ({priority}) {title}" + (f": {desc}" if desc else "")
     path = current_path()
     lines = read_lines(path)
-    today = today_segment()
+    segment = today_segment()
     header = None
     for i, line in enumerate(lines, 1):
         if is_today_segment(line):
@@ -131,7 +133,7 @@ def cmd_create(args):
             lines.append("")
         else:
             lines.append(SEPARATOR)
-        lines.append(today)
+        lines.append(segment)
         lines.append(task)
         pos = len(lines)
     else:
@@ -174,13 +176,14 @@ def cmd_edit(args):
     i = targets[0]
     n = line_to_id(lines)[i]
     m = TASK_RE.match(lines[i - 1])
-    existing, body = split_priority(m.group(3))
+    time_str, existing, body = split_task_meta(m.group(3).strip())
     if priority is not None:
         keep = body if not new_text else new_text
         new_body = f"({priority}) {keep}"
     else:
         new_body = f"({existing}) {new_text}" if existing else new_text
-    lines[i - 1] = f"{m.group(1)}- [{m.group(2)}] {new_body}"
+    time_prefix = f"{time_str} " if time_str else ""
+    lines[i - 1] = f"{m.group(1)}- [{m.group(2)}] {time_prefix}{new_body}"
     write_lines(path, lines)
     print(f"editada [{n}]: {lines[i - 1]}")
     if unknown:
@@ -273,7 +276,7 @@ PRIORIDADES (create -p / edit p):
   - editar el texto sin `p` mantiene la prioridad actual.
 
 DETALLES:
-  - Cada tarea es una linea: - [ ] Titulo: descripcion
+  - Cada tarea es una linea: - [ ] H:MM AM/PM (prioridad) Titulo: descripcion
   - [x] = hecha. El id es el ordinal de la tarea (1, 2, 3...; los
     encabezados #/## y --- no cuentan; puede cambiar al agregar/borrar).
   - done/undo/delete/edit aceptan SOLO ids numericos, nunca texto.

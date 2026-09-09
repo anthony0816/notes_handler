@@ -10,14 +10,14 @@ tanto desde el CLI, desde Obsidian o desde cualquier editor.
 - El archivo de tareas es `C:\Antonio\Notes\TODO\TODO\TODO.md`.
 - Cada tarea es una línea:
   ```
-  - [ ] Título: descripción corta
+  - [ ] 2:30 PM (low) Título: descripción corta
   ```
-- Opcionalmente, al inicio del título va un tag de prioridad:
-  ```
-  - [ ] (max) Título: descripción corta
-  ```
+- `create` agrega automáticamente la hora actual. Opcionalmente, al inicio del
+  título va un tag de prioridad (`low`, `mid`, `max`); sin `-p` la prioridad
+  es `low`.
 - `- [ ]` = pendiente · `- [x]` = hecha.
-- El **id** de una tarea es su número de línea en el archivo (puede cambiar al editar).
+- El **id** de una tarea es su ordinal (1, 2, 3…; los encabezados `#`/`##` y
+  `---` no cuentan; puede cambiar al agregar/borrar).
 
 ## Instalación
 
@@ -137,9 +137,9 @@ Al crear una tarea se guarda un tag de prioridad al inicio del título:
 `(low)`, `(mid)` o `(max)`.
 
 ```console
-> todo create "Comprar pan"                              -> - [ ] (low) Comprar pan
-> todo create -p mid "Reunión" "con el equipo"           -> - [ ] (mid) Reunión: con el equipo
-> todo create -p max "Publicar release"                  -> - [ ] (max) Publicar release
+> todo create "Comprar pan"                              -> - [ ] 2:30 PM (low) Comprar pan
+> todo create -p mid "Reunión" "con el equipo"           -> - [ ] 2:30 PM (mid) Reunión: con el equipo
+> todo create -p max "Publicar release"                  -> - [ ] 2:30 PM (max) Publicar release
 ```
 
 Sin `-p` la prioridad es `low`. Con `-p` se aceptan estas etiquetas:
@@ -218,11 +218,11 @@ La skill `todo-notes` documenta este protocolo y viaja en el repo en
 
 ```console
 > todo create "Comprar pan" "integral, 500g"
-creada [3]: - [ ] (low) Comprar pan: integral, 500g
+creada [3]: - [ ] 2:30 PM (low) Comprar pan: integral, 500g
 > todo create -p max "Publicar release"
-creada [4]: - [ ] (max) Publicar release
+creada [4]: - [ ] 2:30 PM (max) Publicar release
 > todo done 3
-hecha [3]: - [x] (low) Comprar pan: integral, 500g
+hecha [3]: - [x] 2:30 PM (low) Comprar pan: integral, 500g
 > todo sync
 [master 509ca7f] notas: 2026-08-06 16:40
 ```
