@@ -304,11 +304,11 @@ La skill `todo-notes` documenta este protocolo y viaja en el repo en
 
 ```bash
 > todo create "Comprar pan" "integral, 500g"
-creada [3]: - [ ] (low) Comprar pan: integral, 500g
+creada [3]: - [ ] 2:30 PM (low) Comprar pan: integral, 500g
 > todo create -p max "Publicar release"
-creada [4]: - [ ] (max) Publicar release
+creada [4]: - [ ] 2:30 PM (max) Publicar release
 > todo done 3
-hecha [3]: - [x] (low) Comprar pan: integral, 500g
+hecha [3]: - [x] 2:30 PM (low) Comprar pan: integral, 500g
 > todo sync
 [master 509ca7f] notas: 2026-08-06 16:40
 ```

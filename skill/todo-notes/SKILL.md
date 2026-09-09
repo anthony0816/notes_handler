@@ -18,7 +18,7 @@ NOTES_TODO opcional, default `TODO/TODO.md`); ver README.md.
 Cada tarea es UNA linea de markdown:
 
 ```
-- [ ] Titulo: descripcion corta
+- [ ] 2:30 PM (low) Titulo: descripcion corta
 ```
 
 - `- [ ]` = pendiente, `- [x]` = hecha.

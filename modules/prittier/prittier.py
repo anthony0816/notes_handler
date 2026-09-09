@@ -10,7 +10,7 @@ from modules.utils.todo import (
     parse_segments,
     read_lines,
     segment_title,
-    split_priority,
+    split_task_meta,
     todo_items,
 )
 
@@ -94,21 +94,27 @@ def _cell_state(item):
         color = YELLOW
     return f"{BOLD}{color}{visible:<{STATE_W}}{RESET}"
 
+def _cell_time(item):
+    time_str, _, _ = split_task_meta(item["text"])
+    if not time_str:
+        return '        '
+    if int(time_str.split(':')[0]) <= 9:
+        return f'{time_str} '
+    return time_str
 
 def _cell_text(item, width):
-    priority, rest = split_priority(item["text"])
+    _, priority, body = split_task_meta(item["text"])
     color = PRIORITY_COLOR[priority] if priority else WHITE
     bold = BOLD if not item["done"] and priority in ("mid", "max") else ""
-    body = _clip(rest, width)
+    body = _clip(body, width)
     if item["done"]:
         return f"{DIM}{color}{STRIKE}{body}{RESET}"
     return f"{bold}{color}{body}{RESET}"
 
 
-def _print_header(text_width):
-    width = 4 + 2 + STATE_W + 2 + text_width
-    print(f"{BOLD}{CYAN}{'STATE':<{STATE_W}}{RESET}  {BOLD}{CYAN}{'ID':>4}{RESET}  {BOLD}{CYAN}TASK{RESET}")
-    print(f"{DIM}{CYAN}{'-' * width}{RESET}")
+def _print_header():
+    print(f" {BOLD}{CYAN}{'TIME':<{6}}{RESET} {BOLD}{CYAN}{'STATE':<{STATE_W}}{RESET}  {BOLD}{CYAN}{'ID':>4}{RESET}  {BOLD}{CYAN}TASK{RESET}")
+    
 
 
 def _summary(all_items):
@@ -136,7 +142,7 @@ def pretty_print_list(args):
         print(f"{DIM}(sin tareas {MODE_LABEL[mode]}){RESET}")
         return
     text_width = _text_width(items)
-    _print_header(text_width)
+    _print_header()
     segments = parse_segments(read_lines(current_path()))
     for seg in segments:
         seg_items = [it for it in items if it["num"] in seg["task_idx"]]
@@ -154,7 +160,7 @@ def pretty_print_list(args):
                 f"{DIM}{'-' * right}{RESET}"
             )
         for it in seg_items:
-            print(f" {_cell_state(it)}  {_cell_id(it)}  {_cell_text(it, text_width)}")
+            print(f" {_cell_time(it)} {_cell_state(it)}  {_cell_id(it)}  {_cell_text(it, text_width)}")
     _summary(all_items)
     
 def pretty_zoom_tasks(args):
@@ -171,5 +177,5 @@ def pretty_zoom_tasks(args):
         if item is None:
             print(f'{arg} - no encontrado')
             continue
-        print(f" {_cell_state(item)}  {_cell_id(item)}  {_cell_text(item, _text_width([item], full=True))}")
+        print(f" {_cell_time(item)} {_cell_state(item)}  {_cell_id(item)}  {_cell_text(item, _text_width([item], full=True))}")
     
