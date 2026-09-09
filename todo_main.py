@@ -6,11 +6,11 @@ from modules.subTodo.subTodo import SubTodoService
 
 
 def main(argv):
-    if not argv or argv[0] in ("help", "-h", "--help"):
-        print(USAGE)
-        return
+        
     todo = TodoController()
     subTodo = SubTodoService()
+    if len(argv) == 0:
+         argv = ['ls']
     cmd, args = argv[0].lower(), argv[1:]
     handlers = {
         "list": todo.list,
@@ -30,6 +30,11 @@ def main(argv):
         "aim": subTodo.aim
     }
     handler = handlers.get(cmd)
+
+    if not argv or argv[0] in ("help", "-h", "--help"):
+            print(USAGE)
+            return
+
     if handler:
         handler(args)
     else:
