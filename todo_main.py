@@ -1,7 +1,7 @@
 import sys
 
-from todo import USAGE
-from todo_controller import TodoController
+from services.todo_service import USAGE
+from controllers.todo_controller import TodoController
 from modules.subTodo.subTodo import SubTodoService
 
 

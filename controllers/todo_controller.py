@@ -1,7 +1,7 @@
 from modules.config.config import cmd_config, get as config_get
 from modules.git.git import cmd_restore, cmd_sync
 from modules.prittier.prittier import pretty_print_list, pretty_zoom_tasks
-from todo import cmd_create, cmd_delete, cmd_edit, cmd_list, cmd_toggle, cmd_zoom
+from services.todo_service import cmd_create, cmd_delete, cmd_edit, cmd_list, cmd_toggle, cmd_zoom
 
 
 class TodoController:
