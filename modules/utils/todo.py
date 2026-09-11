@@ -136,13 +136,62 @@ def line_to_id(lines):
     return {line_no: n for n, line_no in enumerate(task_line_numbers(lines), 1)}
 
 
+def is_continuation(line):
+    if not line or not line[0].isspace():
+        return False
+    if parse_task(line):
+        return False
+    if is_segment_header(line.strip()):
+        return False
+    if line.strip() in (SEPARATOR, UNKNOWN_SEGMENT):
+        return False
+    return True
+
+
+def task_ranges(lines):
+    ranges = []
+    current = None
+    for i, line in enumerate(lines, 1):
+        if parse_task(line):
+            if current:
+                ranges.append(current)
+            current = [i, i]
+        elif current and is_continuation(line):
+            current[1] = i
+        else:
+            if current:
+                ranges.append(current)
+            current = None
+    if current:
+        ranges.append(current)
+    return [(start, end) for start, end in ranges]
+
+
 def todo_items(path=None):
     lines = read_lines(path or todo_path())
     items = []
-    for n, i in enumerate(task_line_numbers(lines), 1):
-        done, _, text = parse_task(lines[i - 1])
-        items.append({"id": n, "num": i, "done": done, "line": lines[i - 1], "text": text})
+    for n, (start, end) in enumerate(task_ranges(lines), 1):
+        done, _, text = parse_task(lines[start - 1])
+        items.append({
+            "id": n,
+            "num": start,
+            "done": done,
+            "line": lines[start - 1],
+            "text": text,
+            "rest": lines[start:end],
+        })
     return items
+
+
+def task_blocks(lines):
+    return {start: (start, end) for start, end in task_ranges(lines)}
+
+
+def split_task_lines(text):
+    lines = text.splitlines()
+    while lines and not lines[-1]:
+        lines.pop()
+    return lines
 
 
 #======= Time Segmentation ===========

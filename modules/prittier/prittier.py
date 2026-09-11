@@ -178,4 +178,6 @@ def pretty_zoom_tasks(args):
             print(f'{arg} - no encontrado')
             continue
         print(f" {_cell_time(item)} {_cell_state(item)}  {_cell_id(item)}  {_cell_text(item, _text_width([item], full=True))}")
+        for ln in item["rest"]:
+            print(f"  {ln}")
     

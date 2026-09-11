@@ -35,7 +35,7 @@ directorio del proyecto (donde esta `todo.py`).
 
 | Comando | Efecto |
 | --- | --- |
-| `todo create [-p low\|mid\|max] "Titulo" ["desc"]` | crea tarea en el bloque del dia de hoy (lo crea si no existe) con prioridad (default `low`) |
+| `todo create [-p low\|mid\|max] "Titulo" ["desc"]` | crea tarea en el bloque del dia de hoy (lo crea si no existe) con prioridad (default `low`). Multilinea: en PowerShell/Bash saltos de linea reales; en cmd.exe `\n` literal, ej: `todo create "Titulo\nLinea 2\nLinea 3"` (se guardan indentadas 6 espacios, una sola tarea en Obsidian). `todo zoom <id>` muestra el bloque completo y `todo delete <id>` borra todo el bloque. |
 | `todo list [--all\|--done\|--pending]` | lista tareas (default: pendientes) con su id |
 | `todo edit <id> ["p <prio>"] ["texto"]` | edita texto (conserva prioridad); con `p` cambia la prioridad |
 | `todo done <id>` | marca como hecha (`- [x]`) |
@@ -78,6 +78,9 @@ Para que un agente de opencode la use, copiarla (o apuntar skills.paths) a:
 ## Uso desde el agente
 
 1. Para agregar una tarea: `todo create "<titulo>" "<desc>"`.
+   Multilinea: en PowerShell/Bash usar saltos de linea reales dentro del
+   argumento; en cmd.exe separar con `\n` literal, ej:
+   `todo create "Titulo\nDetalle"`.
 2. Para marcar hecha una tarea que el usuario nombra: `todo list`, ubicar el
    id y `todo done <id>`. Si no se encuentra, crear con `create`.
 3. Para cambiar el texto de una tarea: `todo edit <id> "nuevo texto"`.

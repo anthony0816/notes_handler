@@ -32,7 +32,8 @@ solo contiene la herramienta.
 | `modules/prittier/prittier.py` | Listado con colores (`pretty_print_list`) + soporte ANSI en Windows. |
 | `modules/git/git.py` | Operaciones git (`cmd_sync`, `cmd_restore`). |
 | `modules/subTodo/subTodo.py` | `SubTodoService`: gestiona subtodos en `subTodo/` (junto al TODO.md) con `todo sub create/list/delete/edit` y el contexto con `todo aim`; NO toca el principal. `todo sub` sin argumentos lista (marca con `[x]` el activo o `main`). |
-| `todo.cmd` / `todo.sh` | Wrappers Windows/bash que llaman a `todo_main.py`. |
+| `todo.sh` | Wrapper bash que llama a `todo_main.py`. |
+| `todo.ps1` | Lanzador Windows: define la función `todo` (dot-source con `$PSScriptRoot`) que llama a `python todo_main.py` directo, sin cmd.exe. Se agrega a `$PROFILE` (ver README). |
 | `skill/todo-notes/SKILL.md` | Skill de opencode que viaja en el repo; copiar a `~/.config/opencode/skills/` para activarla. |
 | `.env.example` | Plantilla de config del vault (`.env` real no se versiona). |
 

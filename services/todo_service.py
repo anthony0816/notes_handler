@@ -17,9 +17,12 @@ from modules.utils.todo import (
     is_today_segment,
     parse_task,
     read_lines,
+    split_task_lines,
     split_task_meta,
-    line_to_id,
+    task_blocks,
     task_line_numbers,
+    task_ranges,
+    line_to_id,
     today_segment,
     today_time,
     write_lines,
@@ -95,19 +98,26 @@ def cmd_create(args):
     }
     if not args:
         sys.exit('error: usa `todo create "Titulo" ["descripcion"]`')
-    title = args[0]
-    desc = " ".join(args[1:])
+    title = args[0].replace("\\n", "\n")
+    desc = " ".join(args[1:]).replace("\\n", "\n")
     priority =  'low'
     
     if args[0].lower() in priority_flags:
         if args[1].lower() not in priority_labels : 
             return  print(f'Priority state not suported, examples: {priority_labels.__str__()}')
-        title = args[2]
-        desc = " ".join(args[3:])
+        title = args[2].replace("\\n", "\n")
+        desc = " ".join(args[3:]).replace("\\n", "\n")
         priority = priority_dic.get(args[1].lower())
     
     time = today_time()
-    task = f"- [ ] {time} ({priority}) {title}" + (f": {desc}" if desc else "")
+    title_lines = split_task_lines(title) or [""]
+    main_title = title_lines[0]
+    rest_title = title_lines[1:]
+    desc_lines = split_task_lines(desc)
+    main_desc = desc_lines[0].strip() if desc_lines else ""
+    rest_desc = desc_lines[1:]
+    main = f"- [ ] {time} ({priority}) {main_title}" + (f": {main_desc}" if main_desc else "")
+    block = [main] + ["      " + ln for ln in rest_title + rest_desc]
     path = current_path()
     lines = read_lines(path)
     segment = today_segment()
@@ -134,22 +144,23 @@ def cmd_create(args):
         else:
             lines.append(SEPARATOR)
         lines.append(segment)
-        lines.append(task)
-        pos = len(lines)
+        lines.extend(block)
+        pos = len(lines) - len(block) + 1
     else:
-        last_task = None
+        blocks = task_blocks(lines)
+        last_task_end = header
         for i in range(header + 1, len(lines) + 1):
             if is_segment_header(lines[i - 1]):
                 break
             if parse_task(lines[i - 1]):
-                last_task = i
-        if last_task is None:
-            last_task = header
-        lines.insert(last_task, task)
-        pos = last_task + 1
+                last_task_end = blocks[i][1]
+        lines[last_task_end:last_task_end] = block
+        pos = last_task_end + 1
     write_lines(path, lines)
-    new_id = sum(1 for l in lines[:pos] if parse_task(l))
-    print(f"creada [{new_id}]: {task}")
+    new_id = line_to_id(lines)[pos]
+    print(f"creada [{new_id}]:")
+    for ln in block:
+        print(f"  {ln}")
 
 
 def cmd_edit(args):
@@ -216,9 +227,13 @@ def cmd_delete(args):
     if not targets:
         sys.exit("no se encontro la tarea")
     ids = line_to_id(lines)
+    blocks = task_blocks(lines)
     for i in sorted(targets, reverse=True):
+        start, end = blocks[i]
         print(f"eliminada [{ids[i]}]: {lines[i - 1]}")
-        del lines[i - 1]
+        for ln in lines[start:end]:
+            print(f"  {ln}")
+        del lines[start - 1:end]
     write_lines(path, lines)
     if unknown:
         print(f"sin coincidencias: {', '.join(unknown)}", file=sys.stderr)
@@ -227,17 +242,18 @@ def cmd_zoom(args):
     if not args:
         sys.exit('error: todo zoom <id1> <id2> ...')
     lines = read_lines(current_path())
-    ids = task_line_numbers(lines)
+    ranges = task_ranges(lines)
     for arg in args:
         try:
             arg = int(arg)
         except ValueError:
             print(f'{arg} - no encontrado')
             continue
-        if arg < 1 or arg > len(ids):
+        if arg < 1 or arg > len(ranges):
             print(f'{arg} - no encontrado')
             continue
-        print(lines[ids[arg - 1] - 1])
+        start, end = ranges[arg - 1]
+        print("\n".join(lines[start - 1:end]))
 
 
 USAGE = """todo - gestion de tareas TODO (Obsidian + git)
@@ -280,6 +296,10 @@ DETALLES:
   - [x] = hecha. El id es el ordinal de la tarea (1, 2, 3...; los
     encabezados #/## y --- no cuentan; puede cambiar al agregar/borrar).
   - done/undo/delete/edit aceptan SOLO ids numericos, nunca texto.
+  - Multilinea: en PowerShell y bash los saltos de linea reales dentro de
+    un argumento se guardan como continuaciones indentadas (6 espacios).
+    En cmd.exe usar \n literal, ej: todo create "Titulo\\nDetalle 1\\nDetalle 2".
+    todo zoom <id> muestra el bloque completo; todo delete <id> lo borra todo.
   - restore: git reset --hard HEAD en el vault (pide confirmacion; --yes la saltea).
   - sub: los subtodos son .md dentro de subTodo/ (carpeta junto al
     TODO.md principal); el gestor sub NO toca el principal.

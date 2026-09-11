@@ -125,21 +125,50 @@ todo help
 
 ### Windows
 
-Para poder ejecutar `todo` desde cualquier terminal sin escribir la ruta
-completa (`C:\Antonio\Python\Proyectos\notes_handler\todo.cmd`):
+Para ejecutar `todo` desde cualquier terminal de PowerShell sin escribir la ruta
+completa:
 
-1. En el buscador de Windows, escribí **"Variables de entorno"** y abrí
-   *Editar las variables de entorno del sistema*.
-2. Clic en **Variables de entorno…**.
-3. En *Variables de usuario* seleccioná **Path** y clic en **Editar…**.
-4. **Nuevo** y pegá la ruta del proyecto:
+**Opción rápida (recomendada):**
 
-   ```
-   C:\Antonio\Python\Proyectos\notes_handler
-   ```
-5. Aceptá todo y **abrí una terminal nueva**.
+Ejecutá esto en una terminal de PowerShell (crea el perfil si no existe):
 
-Por las instrucciones, se ejecuta `todo.cmd` que llama a `python todo_main.py`.
+```powershell
+New-Item -ItemType Directory -Path (Split-Path $PROFILE.CurrentUserAllHosts) -Force | Out-Null
+'. "C:\Antonio\Python\Proyectos\notes_handler\todo.ps1"' | Out-File -Append -Encoding UTF8 $PROFILE.CurrentUserAllHosts
+```
+
+**Instalación manual:**
+
+Abrí tu `$PROFILE` y agregá la línea:
+
+```powershell
+notepad $PROFILE
+```
+
+Esto crea (o agrega a) tu `$PROFILE` una función que llama a `python.exe`
+directamente, sin pasar por `cmd.exe`. Podés escribir `todo` desde cualquier
+carpeta y los saltos de línea reales en la descripción funcionan sin necesidad
+de `\n`:
+
+```powershell
+todo create "titulo" "desc
+cualquier cosa mas
+lo que quiero poner"
+```
+
+**Instalación manual:**
+
+Agregá esta línea a tu `$PROFILE` (`notepad $PROFILE`):
+
+```powershell
+. "C:\Antonio\Python\Proyectos\notes_handler\todo.ps1"
+```
+
+Reiniciá la terminal y comprobá con `todo help`.
+
+**Legacy (cmd.exe / `todo.cmd` eliminado):** `cmd.exe` no soporta saltos de
+línea reales en argumentos, por lo que `todo.cmd` fue eliminado. En cmd.exe
+seguís podiendo usar `\n` literal:
 
 ## Comandos
 
@@ -244,6 +273,28 @@ Al crear una tarea se guarda un tag de prioridad al inicio del título:
 > todo create -p mid "Reunión" "con el equipo"           -> - [ ] (mid) Reunión: con el equipo
 > todo create -p max "Publicar release"                  -> - [ ] (max) Publicar release
 ```
+
+Tareas multilínea (guarda varias líneas como una sola tarea en Obsidian):
+
+**PowerShell / Bash** (newline real en el argumento):
+
+```powershell
+> todo create "Titulo" "Linea1
+Linea2
+Linea3"  -> - [ ] (low) Titulo: Linea1
+                       Linea2
+                       Linea3
+```
+
+**cmd.exe** (usar `\n` literal):
+
+```cmd
+> todo create "Titulo" "Linea1\nLinea2\nLinea3"
+```
+
+Las líneas siguientes al título se indentan con 6 espacios y Obsidian las
+reconoce como una sola tarea desplegable. `todo zoom <id>` muestra el bloque
+completo; `todo delete <id>` lo borra todo de una vez.
 
 Sin `-p` la prioridad es `low`. Con `-p` se aceptan estas etiquetas:
 
