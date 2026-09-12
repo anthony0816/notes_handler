@@ -38,7 +38,8 @@ def cmd_list(args):
         mode = "done"
     shown = False
     n = 0
-    for line in lines:
+    block_ends = {s: e for s, e in task_ranges(lines)}
+    for i, line in enumerate(lines, 1):
         if (
             is_segment_header(line)
             or line.strip() == SEPARATOR
@@ -53,7 +54,8 @@ def cmd_list(args):
         n += 1
         done, _, text = parsed
         if show_filter(done, mode):
-            print(f"{n:4}  {line}")
+            suffix = " ...more" if block_ends.get(i, i) > i else ""
+            print(f"{n:4}  {line}{suffix}")
             shown = True
     if not shown:
         print("(sin tareas)")

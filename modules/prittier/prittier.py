@@ -160,7 +160,11 @@ def pretty_print_list(args):
                 f"{DIM}{'-' * right}{RESET}"
             )
         for it in seg_items:
-            print(f" {_cell_time(it)} {_cell_state(it)}  {_cell_id(it)}  {_cell_text(it, text_width)}")
+            _, _, body = split_task_meta(it["text"])
+            shown = " ".join(body.split())
+            more = f"  {YELLOW}...more{RESET}" if it["rest"] and len(shown) + 9 <= text_width else ""
+            cell_w = text_width - 9 if more else text_width
+            print(f" {_cell_time(it)} {_cell_state(it)}  {_cell_id(it)}  {_cell_text(it, cell_w)}{more}")
     _summary(all_items)
     
 def pretty_zoom_tasks(args):
