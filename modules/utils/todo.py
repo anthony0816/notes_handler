@@ -186,6 +186,16 @@ def todo_items(path=None):
 def task_blocks(lines):
     return {start: (start, end) for start, end in task_ranges(lines)}
 
+def create_task_block_from_title_desc_time_priority(title, desc, time=None, priority=None, initial_spaces=None,checkbox_content=None):
+    title_lines = split_task_lines(title if title else "") or [""]
+    main_title = title_lines[0]
+    rest_title = title_lines[1:]
+    desc_lines = split_task_lines(desc if desc else "") or [""]
+    main_desc = desc_lines[0]
+    rest_desc = desc_lines[1:]
+    main = f"-{initial_spaces if initial_spaces else " "}[{checkbox_content if checkbox_content else " "}] {time if time else ""} ({priority if priority else ""}) {main_title}" + (f": {main_desc}" if main_desc else "") 
+    block = [main] + ["      " + ln for ln in rest_title + rest_desc]
+    return block
 
 def split_task_lines(text):
     lines = text.splitlines()

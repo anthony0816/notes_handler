@@ -26,6 +26,7 @@ from modules.utils.todo import (
     today_segment,
     today_time,
     write_lines,
+    create_task_block_from_title_desc_time_priority
 )
 
 
@@ -112,14 +113,9 @@ def cmd_create(args):
         priority = priority_dic.get(args[1].lower())
     
     time = today_time()
-    title_lines = split_task_lines(title) or [""]
-    main_title = title_lines[0]
-    rest_title = title_lines[1:]
-    desc_lines = split_task_lines(desc)
-    main_desc = desc_lines[0].strip() if desc_lines else ""
-    rest_desc = desc_lines[1:]
-    main = f"- [ ] {time} ({priority}) {main_title}" + (f": {main_desc}" if main_desc else "")
-    block = [main] + ["      " + ln for ln in rest_title + rest_desc]
+    
+    block = create_task_block_from_title_desc_time_priority(title, desc, time, priority)
+    
     path = current_path()
     lines = read_lines(path)
     segment = today_segment()
@@ -183,22 +179,34 @@ def cmd_edit(args):
             sys.exit(f"priority state not supported, examples: {list(PRIORITY_LABELS)}")
         priority = PRIORITY_LABELS[label]
         rest = rest[2:]
-    new_text = " ".join(rest)
-    if priority is None and not new_text:
+    title = None
+    desc =  None
+    if rest:
+        title = rest[0].replace("\\n", "\n")
+        desc = " ".join(rest[1:]).replace("\\n", "\n")
+        
+    if priority is None and not rest:
         sys.exit("error: falta el nuevo texto")
     i = targets[0]
+    blocks = task_blocks(lines)
+    start_block, end_block = blocks[i]
     n = line_to_id(lines)[i]
     m = TASK_RE.match(lines[i - 1])
-    time_str, existing, body = split_task_meta(m.group(3).strip())
-    if priority is not None:
-        keep = body if not new_text else new_text
-        new_body = f"({priority}) {keep}"
+    time_str, existing_priority, body = split_task_meta(m.group(3).strip())
+    final_priority = priority if priority else existing_priority
+    if title is None and desc is None:
+        if existing_priority and existing_priority != final_priority:
+            lines[start_block - 1] = lines[start_block - 1].replace(f"({existing_priority})", f"({final_priority})", 1)
+        elif not existing_priority and final_priority:
+            lines[start_block - 1] = f"{m.group(1)}- [{m.group(2)}] {time_str} ({final_priority}) {body}"
+        block = lines[start_block - 1:end_block]
     else:
-        new_body = f"({existing}) {new_text}" if existing else new_text
-    time_prefix = f"{time_str} " if time_str else ""
-    lines[i - 1] = f"{m.group(1)}- [{m.group(2)}] {time_prefix}{new_body}"
+        block = create_task_block_from_title_desc_time_priority(title, desc, time=time_str, priority=final_priority, initial_spaces=m.group(1), checkbox_content=m.group(2))
+        lines[start_block - 1:end_block] = block
     write_lines(path, lines)
     print(f"editada [{n}]: {lines[i - 1]}")
+    for ln in block:
+        print(f"  {ln}")
     if unknown:
         print(f"sin coincidencias: {', '.join(unknown)}", file=sys.stderr)
 
